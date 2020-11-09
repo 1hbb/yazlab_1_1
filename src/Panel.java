@@ -6,7 +6,6 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.Random;
-import java.util.Scanner;
 
 public class Panel extends JPanel implements ActionListener {
 
@@ -20,6 +19,7 @@ public class Panel extends JPanel implements ActionListener {
     boolean running = false;
     Random random;
     int size;
+
     int A_PLAYER_LOCATION_X;
     int A_PLAYER_LOCATION_Y;
     int B_PLAYER_LOCATION_X;
@@ -57,11 +57,34 @@ public class Panel extends JPanel implements ActionListener {
 
     public void randomCoins() {
 
+//        for (int i = 0; i < coinCount; i++) {
+//            coinX.add(i, random.nextInt((int) (SCREEN_WIDTH / UNIT_SIZE)) * UNIT_SIZE);
+//            coinY.add(i, random.nextInt((int) (SCREEN_WIDTH / UNIT_SIZE)) * UNIT_SIZE);
+//            coinCountXY.add(i, (random.nextInt((int) (4)) + 1) * 5);
+//        }
+        int eklenenAltın = 0;
+        int randX = 0;
+        int randY = 0;
+        int sayac = 0;
         for (int i = 0; i < coinCount; i++) {
-            coinX.add(i, random.nextInt((int) (SCREEN_WIDTH / UNIT_SIZE)) * UNIT_SIZE);
-            coinY.add(i, random.nextInt((int) (SCREEN_WIDTH / UNIT_SIZE)) * UNIT_SIZE);
-            coinCountXY.add(i, (random.nextInt((int) (4)) + 1) * 5);
+            sayac = 0;
+            randX = random.nextInt((int) (SCREEN_WIDTH / UNIT_SIZE)) * UNIT_SIZE;
+            randY = random.nextInt((int) (SCREEN_WIDTH / UNIT_SIZE)) * UNIT_SIZE;
+            for (int j = 0; j < i; j++) {
+                if (randX == coinX.get(j) && randY == coinY.get(j)) {
+                    sayac--;
+                }
+            }
+            if (sayac <= -1) {
+                i--;
+            } else {
+                coinX.add(i, randX);
+                coinY.add(i, randY);
+                eklenenAltın++;
+                coinCountXY.add(i, (random.nextInt((int) (4)) + 1) * 5);
+            }
         }
+        System.out.println("altın sayisi" + eklenenAltın);
     }
 
     // for start the game
@@ -90,21 +113,22 @@ public class Panel extends JPanel implements ActionListener {
 
         }
         int counter = 0;
-
-
         for (int i = 0; i < coinCount; i++) {
 
-            if (i < Math.round(((coinCount) * 1 / 10))) {
-                g.setColor(Color.RED);
-                System.out.println("Gizli" + (coinCount) * 1 / 10);
-                g.drawString(String.valueOf(coinCountXY.get(i)), coinX.get(i), coinY.get(i));
-                System.out.println(coinX.get(i) + " " + coinY.get(i));
-            } else {
-                g.setColor(Color.BLUE);
-                g.drawString(String.valueOf(coinCountXY.get(i)), coinX.get(i), coinY.get(i));
-                System.out.println(coinX.get(i) + " " + coinY.get(i));
-            }
+//            if (i < Math.round(((coinCount) * 1 / 10))) {
+//                g.setColor(Color.RED);
+//                System.out.println("Gizli" + (coinCount) * 1 / 10);
+//                g.drawString(String.valueOf(coinCountXY.get(i)), coinX.get(i), coinY.get(i));
+//                System.out.println(coinX.get(i) + " " + coinY.get(i));
+//            } else {
+            g.setColor(Color.BLUE);
+            g.drawString(String.valueOf(coinCountXY.get(i)), coinX.get(i) + UNIT_SIZE / 2, coinY.get(i) + UNIT_SIZE / 2);
+            //System.out.println("Size" + coinCountXY.size());
+            System.out.println(coinX.get(i) + " " + coinY.get(i));
+            counter++;
+            //}
         }
+        System.out.println(counter);
     }
 
     @Override
