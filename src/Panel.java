@@ -11,15 +11,37 @@ public class Panel extends JPanel implements ActionListener {
 
     static final int SCREEN_WIDTH = 800;
     static final int SCREEN_HEIGHT = 800;
+
     int UNIT_SIZE;
     int coinCount;
+
     ArrayList<Integer> coinCountXY = new ArrayList<>();
     ArrayList<Integer> coinX = new ArrayList<>();
     ArrayList<Integer> coinY = new ArrayList<>();
+
     boolean running = false;
     Random random;
+
     int SIZE;
     int[][] COIN_MATRIX = new int[SIZE][SIZE];
+
+    int MOVE_STEP = 3; // HER HAMLE ICIN ADIM SAYISI
+
+    int A_PLAYER_COIN_COUNT = 200;
+    int B_PLAYER_COIN_COUNT = 200;
+    int C_PLAYER_COIN_COUNT = 200;
+    int D_PLAYER_COIN_COUNT = 200;
+
+    int A_PLAYER_TARGET_COST = 5;
+    int B_PLAYER_TARGET_COST = 10;
+    int C_PLAYER_TARGET_COST = 15;
+    int D_PLAYER_TARGET_COST = 20;
+
+    int A_PLAYER_MOVE_COST = 5;
+    int B_PLAYER_MOVE_COST = 5;
+    int C_PLAYER_MOVE_COST = 5;
+    int D_PLAYER_MOVE_COST = 5;
+
 
     int A_PLAYER_LOCATION_X;
     int A_PLAYER_LOCATION_Y;
@@ -68,7 +90,22 @@ public class Panel extends JPanel implements ActionListener {
             for (int j = 0; j < i; j++) {
                 if (randX == coinX.get(j) && randY == coinY.get(j)) {
                     counter--;
+                } else {
+                    if (randX / UNIT_SIZE == A_PLAYER_LOCATION_X && randY / UNIT_SIZE == A_PLAYER_LOCATION_Y) {
+                        counter--;
+                    }
+                    if (randX / UNIT_SIZE == B_PLAYER_LOCATION_X && randY / UNIT_SIZE == B_PLAYER_LOCATION_Y) {
+                        counter--;
+                    }
+                    if (randX / UNIT_SIZE == C_PLAYER_LOCATION_X && randY / UNIT_SIZE == C_PLAYER_LOCATION_Y) {
+                        counter--;
+                    }
+                    if (randX / UNIT_SIZE == D_PLAYER_LOCATION_X && randY / UNIT_SIZE == D_PLAYER_LOCATION_Y) {
+                        counter--;
+                    }
+
                 }
+
 
             }
             if (counter <= -1) {
@@ -125,7 +162,7 @@ public class Panel extends JPanel implements ActionListener {
             for (int j = 0; j < SIZE; j++) {
                 if (COIN_MATRIX[i][j] != 0) {
                     g.setColor(Color.BLUE);
-                    g.drawString(String.valueOf(COIN_MATRIX[i][j]), (j * UNIT_SIZE) + (UNIT_SIZE / 2), (i * UNIT_SIZE) + (UNIT_SIZE / 2));
+                    g.drawString(String.valueOf(COIN_MATRIX[i][j]), (i * UNIT_SIZE) + (UNIT_SIZE / 2), (j * UNIT_SIZE) + (UNIT_SIZE / 2));
                 }
             }
         }
@@ -150,13 +187,82 @@ public class Panel extends JPanel implements ActionListener {
         public void keyPressed(KeyEvent e) {
             switch (e.getKeyCode()) {
                 case KeyEvent.VK_ENTER:
-                    randomCoins();
-                    repaint();
+                    FIND_TARGET_FOR_A_PLAYER();
+                    FIND_TARGET_FOR_B_PLAYER();
+                    //randomCoins();
+                    //repaint();
                     break;
 
 
             }
         }
+    }
+
+    public int[] FIND_TARGET_FOR_A_PLAYER() {
+        int[] target = new int[2];
+        int distance = 1000000;
+        for (int i = 0; i < SIZE; i++) {
+            for (int j = 0; j < SIZE; j++) {
+                if (COIN_MATRIX[i][j] != 0) {
+                    int tmp = Math.abs((A_PLAYER_LOCATION_X - i)) + Math.abs((A_PLAYER_LOCATION_Y - j));
+                    if (tmp < distance) {
+                        distance = tmp;
+                        target[0] = i;
+                        target[1] = j;
+                    }
+                }
+            }
+        }
+        System.out.println("A player target i: " + target[0] + " j: " + target[1]);
+        System.out.println("Coint count " + COIN_MATRIX[target[0]][target[1]]);
+
+
+        return target;
+    }
+
+    public int[] FIND_TARGET_FOR_B_PLAYER() {
+        int[] target = new int[2];
+        int distance = 1000000;
+        int earning = 0;
+        for (int i = 0; i < SIZE; i++) {
+            for (int j = 0; j < SIZE; j++) {
+                if (COIN_MATRIX[i][j] != 0) {
+                    int tmp = Math.abs((B_PLAYER_LOCATION_X - i)) + Math.abs((B_PLAYER_LOCATION_Y - j));
+                    tmp = Math.abs(tmp);
+                    System.out.println("[" + i + "]" + "[" + j + "]");
+                    int step;
+                    if (tmp % MOVE_STEP == 0) {
+                        step = tmp / MOVE_STEP;
+                    } else {
+                        step = (tmp / MOVE_STEP) + 1;
+                    }
+                    System.out.println("Step " + step);
+                    int tmp_earning = COIN_MATRIX[i][j] - (step * A_PLAYER_MOVE_COST);
+                    System.out.println("***" + tmp_earning);
+                    if (tmp < distance && tmp_earning > earning) {
+                        distance = tmp;
+                        earning = tmp_earning;
+                        target[0] = i;
+                        target[1] = j;
+                    }
+                }
+            }
+        }
+        System.out.println("B player target i: " + target[0] + " j: " + target[1]);
+        System.out.println("B Coint count " + COIN_MATRIX[target[0]][target[1]]);
+        System.out.println("Earning: " + earning);
+
+
+        return target;
+
+    }
+
+    public void FIND_TARGET_FOR_C_PLAYER() {
+
+    }
+
+    public void FIND_TARGET_FOR_D_PLAYER() {
+
     }
 
     public void PLAYER_A() {
