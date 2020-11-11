@@ -259,13 +259,11 @@ public class Panel extends JPanel implements ActionListener {
                         step = (tmp / MOVE_STEP) + 1;
                     }
                     int tmp_earning = COIN_MATRIX[i][j] - (step * B_PLAYER_MOVE_COST);
-                    if (tmp <= distance) {
+                    if (tmp <= distance && tmp_earning >= earning) {
                         distance = tmp;
-                        if (tmp_earning >= earning) {
-                            earning = tmp_earning;
-                            target[0] = i;
-                            target[1] = j;
-                        }
+                        earning = tmp_earning;
+                        target[0] = i;
+                        target[1] = j;
 
                     }
                 }
@@ -300,13 +298,12 @@ public class Panel extends JPanel implements ActionListener {
                         step = (tmp / MOVE_STEP) + 1;
                     }
                     int tmp_earning = COIN_MATRIX[i][j] - (step * C_PLAYER_MOVE_COST);
-                    if (tmp <= distance) {
+                    if (tmp <= distance && tmp_earning >= earning) {
                         distance = tmp;
-                        if (tmp_earning >= earning) {
-                            earning = tmp_earning;
-                            target[0] = i;
-                            target[1] = j;
-                        }
+                        earning = tmp_earning;
+                        target[0] = i;
+                        target[1] = j;
+
 
                     }
                 }
@@ -351,23 +348,19 @@ public class Panel extends JPanel implements ActionListener {
 
     }
 
-    public void PLAYER_A() {
+    public void MOVE_A() {
 
     }
 
-    public void PLAYER_B() {
+    public void MOVE_B() {
 
     }
 
-    public void PLAYER_C() {
+    public void MOVE_C() {
 
     }
 
-    public void PLAYER_D() {
-
-    }
-
-    public void move() {
+    public void MOVE_D() {
 
     }
 
