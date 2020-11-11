@@ -44,6 +44,10 @@ public class Panel extends JPanel implements ActionListener {
     int C_PLAYER_MOVE_COST = 5;
     int D_PLAYER_MOVE_COST = 5;
 
+    int[] A_PLAYER_CURRENT_TARGET = new int[2];
+    int[] B_PLAYER_CURRENT_TARGET = new int[2];
+    int[] C_PLAYER_CURRENT_TARGET = new int[2];
+    int[] D_PLAYER_CURRENT_TARGET = new int[2];
 
     int A_PLAYER_LOCATION_X;
     int A_PLAYER_LOCATION_Y;
@@ -208,7 +212,8 @@ public class Panel extends JPanel implements ActionListener {
         public void keyPressed(KeyEvent e) {
             switch (e.getKeyCode()) {
                 case KeyEvent.VK_ENTER:
-                    FIND_TARGET_FOR_C_PLAYER();
+                    //FIND_TARGET_FOR_C_PLAYER();
+                    MOVE_A();
                     repaint();
                     //FIND_TARGET_FOR_A_PLAYER();
                     //FIND_TARGET_FOR_B_PLAYER();
@@ -222,16 +227,16 @@ public class Panel extends JPanel implements ActionListener {
     }
 
     public int[] FIND_TARGET_FOR_A_PLAYER() {
-        int[] target = new int[2];
-        int distance = 1000000;
+        int[] target = new int[2]; // target[0] = hedefin x koordinatı target[1] hedefin y koordinatı olacak
+        int distance = 1000000; // mesafeyi max olarak atadım başta çünkü en yakını bulacaz
         for (int i = 0; i < SIZE; i++) {
             for (int j = 0; j < SIZE; j++) {
-                if (COIN_MATRIX[i][j] != 0) {
-                    int tmp = Math.abs((A_PLAYER_LOCATION_X - i)) + Math.abs((A_PLAYER_LOCATION_Y - j));
-                    if (tmp < distance) {
-                        distance = tmp;
-                        target[0] = i;
-                        target[1] = j;
+                if (COIN_MATRIX[i][j] != 0) { // sadece altın olan noktalarda işlem yapmak için
+                    int tmp = Math.abs((A_PLAYER_LOCATION_X - i)) + Math.abs((A_PLAYER_LOCATION_Y - j)); // A oyuncusunun konumu ile altın arasındaki mesafenin mutlak değeri
+                    if (tmp < distance) { //en yakını bulduğumuz kısım
+                        distance = tmp; // mesafeyi her tmp değişkenine atıyoruz
+                        target[0] = i; //en yakındaki altının x koordinatı
+                        target[1] = j; //en yakındaki altının y koordinatı
                     }
                 }
             }
@@ -240,7 +245,7 @@ public class Panel extends JPanel implements ActionListener {
         System.out.println("Coint count " + COIN_MATRIX[target[0]][target[1]]);
 
 
-        return target;
+        return target; // içinde hedefin x ve y koordinatı olan diziyi döndürüyoruz
     }
 
     public int[] FIND_TARGET_FOR_B_PLAYER() {
@@ -349,6 +354,54 @@ public class Panel extends JPanel implements ActionListener {
     }
 
     public void MOVE_A() {
+        boolean moved = false;
+        int halfMove = 1;
+        if (A_PLAYER_CURRENT_TARGET[1] == 0 && A_PLAYER_CURRENT_TARGET[1] == 0) { //başlangıçta hedef belirleme
+            A_PLAYER_CURRENT_TARGET = FIND_TARGET_FOR_A_PLAYER();
+            A_PLAYER_COIN_COUNT = A_PLAYER_COIN_COUNT - A_PLAYER_TARGET_COST;
+        }
+        if (COIN_MATRIX[A_PLAYER_CURRENT_TARGET[0]][A_PLAYER_CURRENT_TARGET[1]] == 0) { //hedef başkası tarafından yendi ise yeniden hedef belirle
+            A_PLAYER_CURRENT_TARGET = FIND_TARGET_FOR_A_PLAYER();
+            A_PLAYER_COIN_COUNT = A_PLAYER_COIN_COUNT - A_PLAYER_TARGET_COST;
+        } // hareket ettirme kısmı
+        if (A_PLAYER_LOCATION_X > A_PLAYER_CURRENT_TARGET[0] && moved == false) {
+            if (A_PLAYER_LOCATION_X - A_PLAYER_CURRENT_TARGET[0] >= MOVE_STEP) {
+                A_PLAYER_LOCATION_X = A_PLAYER_LOCATION_X - MOVE_STEP;
+                moved = true;
+            } else {
+                A_PLAYER_LOCATION_X = A_PLAYER_CURRENT_TARGET[0];
+                halfMove = MOVE_STEP - (A_PLAYER_LOCATION_X - A_PLAYER_CURRENT_TARGET[0]);
+            }
+        } else if (A_PLAYER_CURRENT_TARGET[0] > A_PLAYER_LOCATION_X && moved == false) {
+            if (A_PLAYER_CURRENT_TARGET[0] - A_PLAYER_LOCATION_X >= MOVE_STEP) {
+                A_PLAYER_LOCATION_X = A_PLAYER_LOCATION_X + MOVE_STEP;
+                moved = true;
+            } else {
+                A_PLAYER_LOCATION_X = A_PLAYER_CURRENT_TARGET[0];
+            }
+
+        }
+        if (A_PLAYER_LOCATION_Y > A_PLAYER_CURRENT_TARGET[1] && moved == false) {
+            if (A_PLAYER_LOCATION_Y - A_PLAYER_CURRENT_TARGET[1] >= MOVE_STEP) {
+                A_PLAYER_LOCATION_Y = A_PLAYER_LOCATION_Y - MOVE_STEP;
+                moved = true;
+            } else {
+                A_PLAYER_LOCATION_Y = A_PLAYER_CURRENT_TARGET[1];
+            }
+
+        } else if (A_PLAYER_CURRENT_TARGET[1] > A_PLAYER_LOCATION_Y && moved == false) {
+            if (A_PLAYER_CURRENT_TARGET[1] - A_PLAYER_LOCATION_Y >= MOVE_STEP) {
+                A_PLAYER_LOCATION_Y = A_PLAYER_LOCATION_Y + MOVE_STEP;
+                moved = true;
+            } else {
+                A_PLAYER_LOCATION_Y = A_PLAYER_CURRENT_TARGET[1];
+            }
+        }
+        if (A_PLAYER_LOCATION_X == A_PLAYER_CURRENT_TARGET[0] && A_PLAYER_LOCATION_Y == A_PLAYER_CURRENT_TARGET[1]) { //hedefine ulaştı ise
+            A_PLAYER_COIN_COUNT += COIN_MATRIX[A_PLAYER_LOCATION_X][A_PLAYER_LOCATION_Y];
+            COIN_MATRIX[A_PLAYER_LOCATION_X][A_PLAYER_LOCATION_Y] = 0;
+        }
+        A_PLAYER_COIN_COUNT = A_PLAYER_COIN_COUNT - A_PLAYER_MOVE_COST;
 
     }
 
