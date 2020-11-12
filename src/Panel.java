@@ -354,8 +354,8 @@ public class Panel extends JPanel implements ActionListener {
     }
 
     public void MOVE_A() {
-        boolean moved = false;
-        int halfMove = 1;
+        String moved = "";
+        int mod = 0;
         if (A_PLAYER_CURRENT_TARGET[1] == 0 && A_PLAYER_CURRENT_TARGET[1] == 0) { //başlangıçta hedef belirleme
             A_PLAYER_CURRENT_TARGET = FIND_TARGET_FOR_A_PLAYER();
             A_PLAYER_COIN_COUNT = A_PLAYER_COIN_COUNT - A_PLAYER_TARGET_COST;
@@ -364,37 +364,86 @@ public class Panel extends JPanel implements ActionListener {
             A_PLAYER_CURRENT_TARGET = FIND_TARGET_FOR_A_PLAYER();
             A_PLAYER_COIN_COUNT = A_PLAYER_COIN_COUNT - A_PLAYER_TARGET_COST;
         } // hareket ettirme kısmı
-        if (A_PLAYER_LOCATION_X > A_PLAYER_CURRENT_TARGET[0] && moved == false) {
-            if (A_PLAYER_LOCATION_X - A_PLAYER_CURRENT_TARGET[0] >= MOVE_STEP) {
+        if (A_PLAYER_LOCATION_X > A_PLAYER_CURRENT_TARGET[0]) {
+            if (A_PLAYER_LOCATION_X - A_PLAYER_CURRENT_TARGET[0] >= MOVE_STEP && moved == "") {
                 A_PLAYER_LOCATION_X = A_PLAYER_LOCATION_X - MOVE_STEP;
-                moved = true;
+                moved = "true";
             } else {
-                A_PLAYER_LOCATION_X = A_PLAYER_CURRENT_TARGET[0];
-                halfMove = MOVE_STEP - (A_PLAYER_LOCATION_X - A_PLAYER_CURRENT_TARGET[0]);
+                moved = "false";
+                if (mod == 0) {
+                    int tmp = A_PLAYER_LOCATION_X - A_PLAYER_CURRENT_TARGET[0];
+                    A_PLAYER_LOCATION_X = A_PLAYER_LOCATION_X - (A_PLAYER_LOCATION_X - A_PLAYER_CURRENT_TARGET[0]);
+                    mod = MOVE_STEP - tmp;
+                    System.out.println("mod: " + mod);
+                } else if (mod <= A_PLAYER_LOCATION_X - A_PLAYER_CURRENT_TARGET[0]) {
+                    A_PLAYER_LOCATION_X = A_PLAYER_LOCATION_X - mod;
+                } else if (A_PLAYER_LOCATION_X - A_PLAYER_CURRENT_TARGET[0] == 0) {
+                    A_PLAYER_LOCATION_X = A_PLAYER_LOCATION_X - mod;
+                } else {
+                    A_PLAYER_LOCATION_X = A_PLAYER_LOCATION_X - (A_PLAYER_LOCATION_X - A_PLAYER_CURRENT_TARGET[0]);
+                }
+
             }
-        } else if (A_PLAYER_CURRENT_TARGET[0] > A_PLAYER_LOCATION_X && moved == false) {
-            if (A_PLAYER_CURRENT_TARGET[0] - A_PLAYER_LOCATION_X >= MOVE_STEP) {
+        }
+        if (A_PLAYER_CURRENT_TARGET[0] > A_PLAYER_LOCATION_X) {
+            if (A_PLAYER_CURRENT_TARGET[0] - A_PLAYER_LOCATION_X >= MOVE_STEP && moved == "") {
                 A_PLAYER_LOCATION_X = A_PLAYER_LOCATION_X + MOVE_STEP;
-                moved = true;
+                moved = "true";
             } else {
-                A_PLAYER_LOCATION_X = A_PLAYER_CURRENT_TARGET[0];
+                moved = "false";
+                if (mod == 0) {
+                    int tmp = A_PLAYER_CURRENT_TARGET[0] - A_PLAYER_LOCATION_X;
+                    A_PLAYER_LOCATION_X = A_PLAYER_LOCATION_X + (A_PLAYER_CURRENT_TARGET[0] - A_PLAYER_LOCATION_X);
+                    mod = MOVE_STEP - tmp;
+                    System.out.println("mod: " + mod);
+                } else if (mod <= A_PLAYER_CURRENT_TARGET[0] - A_PLAYER_LOCATION_X) {
+                    A_PLAYER_LOCATION_X = A_PLAYER_LOCATION_X + mod;
+                } else if (A_PLAYER_CURRENT_TARGET[0] - A_PLAYER_LOCATION_X == 0) {
+                    A_PLAYER_LOCATION_X = A_PLAYER_LOCATION_X + mod;
+                } else {
+                    A_PLAYER_LOCATION_X = A_PLAYER_LOCATION_X - (A_PLAYER_CURRENT_TARGET[0] - A_PLAYER_LOCATION_X);
+                }
+
+            }
+        }
+        if (A_PLAYER_LOCATION_Y > A_PLAYER_CURRENT_TARGET[1] && moved != "true") {
+            if (A_PLAYER_LOCATION_Y - A_PLAYER_CURRENT_TARGET[1] >= MOVE_STEP && moved == "") {
+                A_PLAYER_LOCATION_Y = A_PLAYER_LOCATION_Y - MOVE_STEP;
+            } else {
+                if (mod == 0) {
+                    int tmp = A_PLAYER_LOCATION_Y - A_PLAYER_CURRENT_TARGET[1];
+                    A_PLAYER_LOCATION_Y = A_PLAYER_LOCATION_Y - (A_PLAYER_LOCATION_Y - A_PLAYER_CURRENT_TARGET[1]);
+                    mod = MOVE_STEP - tmp;
+                    System.out.println("mod: " + mod);
+                } else if (mod <= (A_PLAYER_LOCATION_Y - A_PLAYER_CURRENT_TARGET[1])) {
+                    A_PLAYER_LOCATION_Y = A_PLAYER_LOCATION_Y - mod;
+                } else if (A_PLAYER_LOCATION_Y - A_PLAYER_CURRENT_TARGET[1] == 0) {
+                    A_PLAYER_LOCATION_Y = A_PLAYER_LOCATION_Y - mod;
+                } else {
+                    A_PLAYER_LOCATION_Y = A_PLAYER_LOCATION_Y - (A_PLAYER_LOCATION_Y - A_PLAYER_CURRENT_TARGET[1]);
+                }
+
             }
 
         }
-        if (A_PLAYER_LOCATION_Y > A_PLAYER_CURRENT_TARGET[1] && moved == false) {
-            if (A_PLAYER_LOCATION_Y - A_PLAYER_CURRENT_TARGET[1] >= MOVE_STEP) {
-                A_PLAYER_LOCATION_Y = A_PLAYER_LOCATION_Y - MOVE_STEP;
-                moved = true;
-            } else {
-                A_PLAYER_LOCATION_Y = A_PLAYER_CURRENT_TARGET[1];
-            }
-
-        } else if (A_PLAYER_CURRENT_TARGET[1] > A_PLAYER_LOCATION_Y && moved == false) {
-            if (A_PLAYER_CURRENT_TARGET[1] - A_PLAYER_LOCATION_Y >= MOVE_STEP) {
+        if (A_PLAYER_CURRENT_TARGET[1] > A_PLAYER_LOCATION_Y && moved != "true") {
+            if (A_PLAYER_CURRENT_TARGET[1] - A_PLAYER_LOCATION_Y >= MOVE_STEP && moved == "") {
                 A_PLAYER_LOCATION_Y = A_PLAYER_LOCATION_Y + MOVE_STEP;
-                moved = true;
             } else {
-                A_PLAYER_LOCATION_Y = A_PLAYER_CURRENT_TARGET[1];
+                if (mod == 0) {
+                    int tmp = A_PLAYER_CURRENT_TARGET[1] - A_PLAYER_LOCATION_Y;
+                    A_PLAYER_LOCATION_Y = A_PLAYER_LOCATION_Y + (A_PLAYER_CURRENT_TARGET[1] - A_PLAYER_LOCATION_Y);
+                    mod = MOVE_STEP - tmp;
+                    System.out.println("mod: " + mod);
+                } else if (mod <= A_PLAYER_CURRENT_TARGET[1] - A_PLAYER_LOCATION_Y) {
+                    A_PLAYER_LOCATION_Y = A_PLAYER_LOCATION_Y + mod;
+
+                } else if (A_PLAYER_CURRENT_TARGET[1] - A_PLAYER_LOCATION_Y == 0) {
+                    A_PLAYER_LOCATION_Y = A_PLAYER_LOCATION_Y + mod;
+                } else {
+                    A_PLAYER_LOCATION_Y = A_PLAYER_LOCATION_Y + (A_PLAYER_CURRENT_TARGET[1] - A_PLAYER_LOCATION_Y);
+                }
+
             }
         }
         if (A_PLAYER_LOCATION_X == A_PLAYER_CURRENT_TARGET[0] && A_PLAYER_LOCATION_Y == A_PLAYER_CURRENT_TARGET[1]) { //hedefine ulaştı ise
