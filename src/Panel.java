@@ -360,6 +360,8 @@ public class Panel extends JPanel implements ActionListener {
         int[] target = new int[2];
         int distance = 1000000;
         int earning = -1000000;
+        boolean passThisTarget = false;
+
         for (int i = 0; i < SIZE; i++) {
             for (int j = 0; j < SIZE; j++) {
                 if (COIN_MATRIX[i][j] != 0) {
@@ -371,14 +373,57 @@ public class Panel extends JPanel implements ActionListener {
                     } else {
                         step = (tmp / MOVE_STEP) + 1;
                     }
+
+                    if (i == A_PLAYER_CURRENT_TARGET[0] && j == A_PLAYER_CURRENT_TARGET[1]) {
+                        int tmpA = Math.abs((A_PLAYER_LOCATION_X - i)) + Math.abs((A_PLAYER_LOCATION_Y - j));
+                        int stepA;
+                        if (tmpA % MOVE_STEP == 0) {
+                            stepA = tmpA / MOVE_STEP;
+                        } else {
+                            stepA = (tmpA / MOVE_STEP) + 1;
+                        }
+                        if (stepA < step) {
+                            passThisTarget = true;
+                        }
+
+
+                    }
+                    if (i == B_PLAYER_CURRENT_TARGET[0] && j == B_PLAYER_CURRENT_TARGET[1]) {
+                        int tmpB = Math.abs((B_PLAYER_LOCATION_X - i)) + Math.abs((B_PLAYER_LOCATION_Y - j));
+                        int stepB;
+                        if (tmpB % MOVE_STEP == 0) {
+                            stepB = tmpB / MOVE_STEP;
+                        } else {
+                            stepB = (tmpB / MOVE_STEP) + 1;
+                        }
+                        if (stepB < step) {
+                            passThisTarget = true;
+                        }
+
+
+                    }
+                    if (i == C_PLAYER_CURRENT_TARGET[0] && j == C_PLAYER_CURRENT_TARGET[1]) {
+                        int tmpC = Math.abs((C_PLAYER_LOCATION_X - i)) + Math.abs((C_PLAYER_LOCATION_Y - j));
+                        int stepC;
+                        if (tmpC % MOVE_STEP == 0) {
+                            stepC = tmpC / MOVE_STEP;
+                        } else {
+                            stepC = (tmpC / MOVE_STEP) + 1;
+                        }
+                        if (stepC < step) {
+                            passThisTarget = true;
+                        }
+
+
+                    }
+
+
                     int tmp_earning = COIN_MATRIX[i][j] - (step * D_PLAYER_MOVE_COST);
-                    if (tmp <= distance && tmp_earning >= earning) {
+                    if (tmp <= distance && tmp_earning >= earning && passThisTarget == false) {
                         distance = tmp;
                         earning = tmp_earning;
                         target[0] = i;
                         target[1] = j;
-
-
                     }
                 }
             }
