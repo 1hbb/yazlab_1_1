@@ -12,6 +12,13 @@ public class Panel extends JPanel implements ActionListener {
     static final int SCREEN_WIDTH = 800;
     static final int SCREEN_HEIGHT = 800;
 
+    String NEXT_PLAYER = "A";
+
+    boolean A_PLAYER_ELIMINATED = false;
+    boolean B_PLAYER_ELIMINATED = false;
+    boolean C_PLAYER_ELIMINATED = false;
+    boolean D_PLAYER_ELIMINATED = false;
+
     int UNIT_SIZE;
     int coinCount;
     int secretCoinCount;
@@ -63,6 +70,7 @@ public class Panel extends JPanel implements ActionListener {
         String str1 = JOptionPane.showInputDialog("Boyutu Girin: ");
         int size = Integer.parseInt(str1);
         SIZE = size;
+        System.out.println(SIZE);
         UNIT_SIZE = 800 / size;
         coinCount = (SCREEN_HEIGHT / UNIT_SIZE * SCREEN_HEIGHT / UNIT_SIZE) * 20 / 100;
         secretCoinCount = coinCount * 1 / 10;
@@ -201,30 +209,6 @@ public class Panel extends JPanel implements ActionListener {
 
     }
 
-    @Override
-    public void actionPerformed(ActionEvent e) {
-
-        System.out.println("Action Performed");
-    }
-
-    public class MyKeyAdapter extends KeyAdapter {
-        @Override
-        public void keyPressed(KeyEvent e) {
-            switch (e.getKeyCode()) {
-                case KeyEvent.VK_ENTER:
-                    //FIND_TARGET_FOR_C_PLAYER();
-                    MOVE_A();
-                    repaint();
-                    //FIND_TARGET_FOR_A_PLAYER();
-                    //FIND_TARGET_FOR_B_PLAYER();
-                    //randomCoins();
-                    //repaint();
-                    break;
-
-
-            }
-        }
-    }
 
     public int[] FIND_TARGET_FOR_A_PLAYER() {
         int[] target = new int[2]; // target[0] = hedefin x koordinatı target[1] hedefin y koordinatı olacak
@@ -244,14 +228,13 @@ public class Panel extends JPanel implements ActionListener {
         System.out.println("A player target i: " + target[0] + " j: " + target[1]);
         System.out.println("Coint count " + COIN_MATRIX[target[0]][target[1]]);
 
-
         return target; // içinde hedefin x ve y koordinatı olan diziyi döndürüyoruz
     }
 
     public int[] FIND_TARGET_FOR_B_PLAYER() {
         int[] target = new int[2];
         int distance = 1000000;
-        int earning = 0;
+        int earning = -1000000;
         for (int i = 0; i < SIZE; i++) {
             for (int j = 0; j < SIZE; j++) {
                 if (COIN_MATRIX[i][j] != 0) {
@@ -290,7 +273,7 @@ public class Panel extends JPanel implements ActionListener {
 
         int[] target = new int[2];
         int distance = 1000000;
-        int earning = 0;
+        int earning = -1000000;
         for (int i = 0; i < SIZE; i++) {
             for (int j = 0; j < SIZE; j++) {
                 if (COIN_MATRIX[i][j] != 0) {
@@ -330,7 +313,8 @@ public class Panel extends JPanel implements ActionListener {
             for (int j = 0; j < SIZE; j++) {
                 if (SECRET_COIN_MATRIX[i][j] != 0) {
                     int tmp = Math.abs((C_PLAYER_LOCATION_X - i)) + Math.abs((C_PLAYER_LOCATION_Y - j));
-                    tmp = Math.abs(tmp);
+                    int distanceToAPlayersTarget =
+                            tmp = Math.abs(tmp);
                     if (tmp <= distance) {
                         distance = tmp;
                         target[0] = i;
@@ -349,22 +333,60 @@ public class Panel extends JPanel implements ActionListener {
     }
 
 
-    public void FIND_TARGET_FOR_D_PLAYER() {
+    public int[] FIND_TARGET_FOR_D_PLAYER() {
+        int[] target = new int[2];
+        int distance = 1000000;
+        int earning = -1000000;
+        for (int i = 0; i < SIZE; i++) {
+            for (int j = 0; j < SIZE; j++) {
+                if (COIN_MATRIX[i][j] != 0) {
+                    int tmp = Math.abs((D_PLAYER_LOCATION_X - i)) + Math.abs((D_PLAYER_LOCATION_Y - j));
+                    tmp = Math.abs(tmp);
+                    int step;
+                    if (tmp % MOVE_STEP == 0) {
+                        step = tmp / MOVE_STEP;
+                    } else {
+                        step = (tmp / MOVE_STEP) + 1;
+                    }
+                    int tmp_earning = COIN_MATRIX[i][j] - (step * D_PLAYER_MOVE_COST);
+                    if (tmp <= distance && tmp_earning >= earning) {
+                        distance = tmp;
+                        earning = tmp_earning;
+                        target[0] = i;
+                        target[1] = j;
 
+
+                    }
+                }
+            }
+        }
+        System.out.println("D player target i: " + target[0] + " j: " + target[1]);
+        System.out.println("D Coint count " + COIN_MATRIX[target[0]][target[1]]);
+        System.out.println("D Player Earning For Move: " + earning);
+
+
+        return target;
     }
 
     public void MOVE_A() {
         String moved = "";
         int mod = 0;
-        if (A_PLAYER_CURRENT_TARGET[1] == 0 && A_PLAYER_CURRENT_TARGET[1] == 0) { //başlangıçta hedef belirleme
+
+
+        if (A_PLAYER_CURRENT_TARGET[0] == 0 && A_PLAYER_CURRENT_TARGET[1] == 0) { //başlangıçta hedef belirleme
             A_PLAYER_CURRENT_TARGET = FIND_TARGET_FOR_A_PLAYER();
             A_PLAYER_COIN_COUNT = A_PLAYER_COIN_COUNT - A_PLAYER_TARGET_COST;
         }
         if (COIN_MATRIX[A_PLAYER_CURRENT_TARGET[0]][A_PLAYER_CURRENT_TARGET[1]] == 0) { //hedef başkası tarafından yendi ise yeniden hedef belirle
             A_PLAYER_CURRENT_TARGET = FIND_TARGET_FOR_A_PLAYER();
-            A_PLAYER_COIN_COUNT = A_PLAYER_COIN_COUNT - A_PLAYER_TARGET_COST;
+            //A_PLAYER_COIN_COUNT = A_PLAYER_COIN_COUNT - A_PLAYER_TARGET_COST;
+            if (A_PLAYER_CURRENT_TARGET[0] == 0 && A_PLAYER_CURRENT_TARGET[1] == 0) {
+                A_PLAYER_ELIMINATED = true;
+            } else {
+                A_PLAYER_COIN_COUNT = A_PLAYER_COIN_COUNT - A_PLAYER_TARGET_COST;
+            }
         } // hareket ettirme kısmı
-        if (A_PLAYER_LOCATION_X > A_PLAYER_CURRENT_TARGET[0]) {
+        if (A_PLAYER_LOCATION_X > A_PLAYER_CURRENT_TARGET[0] && A_PLAYER_ELIMINATED == false) {
             if (A_PLAYER_LOCATION_X - A_PLAYER_CURRENT_TARGET[0] >= MOVE_STEP && moved == "") {
                 A_PLAYER_LOCATION_X = A_PLAYER_LOCATION_X - MOVE_STEP;
                 moved = "true";
@@ -385,7 +407,7 @@ public class Panel extends JPanel implements ActionListener {
 
             }
         }
-        if (A_PLAYER_CURRENT_TARGET[0] > A_PLAYER_LOCATION_X) {
+        if (A_PLAYER_CURRENT_TARGET[0] > A_PLAYER_LOCATION_X && A_PLAYER_ELIMINATED == false) {
             if (A_PLAYER_CURRENT_TARGET[0] - A_PLAYER_LOCATION_X >= MOVE_STEP && moved == "") {
                 A_PLAYER_LOCATION_X = A_PLAYER_LOCATION_X + MOVE_STEP;
                 moved = "true";
@@ -406,7 +428,7 @@ public class Panel extends JPanel implements ActionListener {
 
             }
         }
-        if (A_PLAYER_LOCATION_Y > A_PLAYER_CURRENT_TARGET[1] && moved != "true") {
+        if (A_PLAYER_LOCATION_Y > A_PLAYER_CURRENT_TARGET[1] && moved != "true" && A_PLAYER_ELIMINATED == false) {
             if (A_PLAYER_LOCATION_Y - A_PLAYER_CURRENT_TARGET[1] >= MOVE_STEP && moved == "") {
                 A_PLAYER_LOCATION_Y = A_PLAYER_LOCATION_Y - MOVE_STEP;
             } else {
@@ -426,7 +448,7 @@ public class Panel extends JPanel implements ActionListener {
             }
 
         }
-        if (A_PLAYER_CURRENT_TARGET[1] > A_PLAYER_LOCATION_Y && moved != "true") {
+        if (A_PLAYER_CURRENT_TARGET[1] > A_PLAYER_LOCATION_Y && moved != "true" && A_PLAYER_ELIMINATED == false) {
             if (A_PLAYER_CURRENT_TARGET[1] - A_PLAYER_LOCATION_Y >= MOVE_STEP && moved == "") {
                 A_PLAYER_LOCATION_Y = A_PLAYER_LOCATION_Y + MOVE_STEP;
             } else {
@@ -449,21 +471,464 @@ public class Panel extends JPanel implements ActionListener {
         if (A_PLAYER_LOCATION_X == A_PLAYER_CURRENT_TARGET[0] && A_PLAYER_LOCATION_Y == A_PLAYER_CURRENT_TARGET[1]) { //hedefine ulaştı ise
             A_PLAYER_COIN_COUNT += COIN_MATRIX[A_PLAYER_LOCATION_X][A_PLAYER_LOCATION_Y];
             COIN_MATRIX[A_PLAYER_LOCATION_X][A_PLAYER_LOCATION_Y] = 0;
+
+            A_PLAYER_CURRENT_TARGET = FIND_TARGET_FOR_A_PLAYER();
+            if (A_PLAYER_CURRENT_TARGET[0] == 0 && A_PLAYER_CURRENT_TARGET[1] == 0) {
+                A_PLAYER_ELIMINATED = true;
+            } else {
+                A_PLAYER_COIN_COUNT = A_PLAYER_COIN_COUNT - A_PLAYER_TARGET_COST;
+            }
+
         }
-        A_PLAYER_COIN_COUNT = A_PLAYER_COIN_COUNT - A_PLAYER_MOVE_COST;
+        if (A_PLAYER_CURRENT_TARGET[0] == 0 && A_PLAYER_CURRENT_TARGET[1] == 0) {
+            A_PLAYER_ELIMINATED = true;
+        }
+        if (A_PLAYER_ELIMINATED == false) {
+            A_PLAYER_COIN_COUNT = A_PLAYER_COIN_COUNT - A_PLAYER_MOVE_COST;
+        }
+
+        if (A_PLAYER_COIN_COUNT <= 0) {
+            A_PLAYER_ELIMINATED = true;
+            A_PLAYER_COIN_COUNT = 0;
+        }
+
+        //NEXT_PLAYER = "B";
 
     }
 
     public void MOVE_B() {
+        String moved = "";
+        int mod = 0;
 
+
+        if (B_PLAYER_CURRENT_TARGET[0] == 0 && B_PLAYER_CURRENT_TARGET[1] == 0) { //başlangıçta hedef belirleme
+            B_PLAYER_CURRENT_TARGET = FIND_TARGET_FOR_B_PLAYER();
+            B_PLAYER_COIN_COUNT = B_PLAYER_COIN_COUNT - B_PLAYER_TARGET_COST;
+        }
+        if (COIN_MATRIX[B_PLAYER_CURRENT_TARGET[0]][B_PLAYER_CURRENT_TARGET[1]] == 0) { //hedef başkası tarafından yendi ise yeniden hedef belirle
+            B_PLAYER_CURRENT_TARGET = FIND_TARGET_FOR_B_PLAYER();
+
+            if (B_PLAYER_CURRENT_TARGET[0] == 0 && B_PLAYER_CURRENT_TARGET[1] == 0) {
+                B_PLAYER_ELIMINATED = true;
+            } else {
+                B_PLAYER_COIN_COUNT = B_PLAYER_COIN_COUNT - B_PLAYER_TARGET_COST;
+            }
+        } // hareket ettirme kısmı
+        if (B_PLAYER_LOCATION_X > B_PLAYER_CURRENT_TARGET[0] && B_PLAYER_ELIMINATED == false) {
+            if (B_PLAYER_LOCATION_X - B_PLAYER_CURRENT_TARGET[0] >= MOVE_STEP && moved == "") {
+                B_PLAYER_LOCATION_X = B_PLAYER_LOCATION_X - MOVE_STEP;
+                moved = "true";
+            } else {
+                moved = "false";
+                if (mod == 0) {
+                    int tmp = B_PLAYER_LOCATION_X - B_PLAYER_CURRENT_TARGET[0];
+                    B_PLAYER_LOCATION_X = B_PLAYER_LOCATION_X - (B_PLAYER_LOCATION_X - B_PLAYER_CURRENT_TARGET[0]);
+                    mod = MOVE_STEP - tmp;
+                    System.out.println("mod: " + mod);
+                } else if (mod <= B_PLAYER_LOCATION_X - B_PLAYER_CURRENT_TARGET[0]) {
+                    B_PLAYER_LOCATION_X = B_PLAYER_LOCATION_X - mod;
+                } else if (B_PLAYER_LOCATION_X - B_PLAYER_CURRENT_TARGET[0] == 0) {
+                    B_PLAYER_LOCATION_X = B_PLAYER_LOCATION_X - mod;
+                } else {
+                    B_PLAYER_LOCATION_X = B_PLAYER_LOCATION_X - (B_PLAYER_LOCATION_X - B_PLAYER_CURRENT_TARGET[0]);
+                }
+
+            }
+        }
+        if (B_PLAYER_CURRENT_TARGET[0] > B_PLAYER_LOCATION_X && B_PLAYER_ELIMINATED == false) {
+            if (B_PLAYER_CURRENT_TARGET[0] - B_PLAYER_LOCATION_X >= MOVE_STEP && moved == "") {
+                B_PLAYER_LOCATION_X = B_PLAYER_LOCATION_X + MOVE_STEP;
+                moved = "true";
+            } else {
+                moved = "false";
+                if (mod == 0) {
+                    int tmp = B_PLAYER_CURRENT_TARGET[0] - B_PLAYER_LOCATION_X;
+                    B_PLAYER_LOCATION_X = B_PLAYER_LOCATION_X + (B_PLAYER_CURRENT_TARGET[0] - B_PLAYER_LOCATION_X);
+                    mod = MOVE_STEP - tmp;
+                    System.out.println("mod: " + mod);
+                } else if (mod <= B_PLAYER_CURRENT_TARGET[0] - B_PLAYER_LOCATION_X) {
+                    B_PLAYER_LOCATION_X = B_PLAYER_LOCATION_X + mod;
+                } else if (B_PLAYER_CURRENT_TARGET[0] - B_PLAYER_LOCATION_X == 0) {
+                    B_PLAYER_LOCATION_X = B_PLAYER_LOCATION_X + mod;
+                } else {
+                    B_PLAYER_LOCATION_X = B_PLAYER_LOCATION_X - (B_PLAYER_CURRENT_TARGET[0] - B_PLAYER_LOCATION_X);
+                }
+
+            }
+        }
+        if (B_PLAYER_LOCATION_Y > B_PLAYER_CURRENT_TARGET[1] && moved != "true" && B_PLAYER_ELIMINATED == false) {
+            if (B_PLAYER_LOCATION_Y - B_PLAYER_CURRENT_TARGET[1] >= MOVE_STEP && moved == "") {
+                B_PLAYER_LOCATION_Y = B_PLAYER_LOCATION_Y - MOVE_STEP;
+            } else {
+                if (mod == 0) {
+                    int tmp = B_PLAYER_LOCATION_Y - B_PLAYER_CURRENT_TARGET[1];
+                    B_PLAYER_LOCATION_Y = B_PLAYER_LOCATION_Y - (B_PLAYER_LOCATION_Y - B_PLAYER_CURRENT_TARGET[1]);
+                    mod = MOVE_STEP - tmp;
+                    System.out.println("mod: " + mod);
+                } else if (mod <= (B_PLAYER_LOCATION_Y - B_PLAYER_CURRENT_TARGET[1])) {
+                    B_PLAYER_LOCATION_Y = B_PLAYER_LOCATION_Y - mod;
+                } else if (B_PLAYER_LOCATION_Y - B_PLAYER_CURRENT_TARGET[1] == 0) {
+                    B_PLAYER_LOCATION_Y = B_PLAYER_LOCATION_Y - mod;
+                } else {
+                    B_PLAYER_LOCATION_Y = B_PLAYER_LOCATION_Y - (B_PLAYER_LOCATION_Y - B_PLAYER_CURRENT_TARGET[1]);
+                }
+
+            }
+
+        }
+        if (B_PLAYER_CURRENT_TARGET[1] > B_PLAYER_LOCATION_Y && moved != "true" && B_PLAYER_ELIMINATED == false) {
+            if (B_PLAYER_CURRENT_TARGET[1] - B_PLAYER_LOCATION_Y >= MOVE_STEP && moved == "") {
+                B_PLAYER_LOCATION_Y = B_PLAYER_LOCATION_Y + MOVE_STEP;
+            } else {
+                if (mod == 0) {
+                    int tmp = B_PLAYER_CURRENT_TARGET[1] - B_PLAYER_LOCATION_Y;
+                    B_PLAYER_LOCATION_Y = B_PLAYER_LOCATION_Y + (B_PLAYER_CURRENT_TARGET[1] - B_PLAYER_LOCATION_Y);
+                    mod = MOVE_STEP - tmp;
+                    System.out.println("mod: " + mod);
+                } else if (mod <= B_PLAYER_CURRENT_TARGET[1] - B_PLAYER_LOCATION_Y) {
+                    B_PLAYER_LOCATION_Y = B_PLAYER_LOCATION_Y + mod;
+
+                } else if (B_PLAYER_CURRENT_TARGET[1] - B_PLAYER_LOCATION_Y == 0) {
+                    B_PLAYER_LOCATION_Y = B_PLAYER_LOCATION_Y + mod;
+                } else {
+                    B_PLAYER_LOCATION_Y = B_PLAYER_LOCATION_Y + (B_PLAYER_CURRENT_TARGET[1] - B_PLAYER_LOCATION_Y);
+                }
+
+            }
+        }
+        if (B_PLAYER_LOCATION_X == B_PLAYER_CURRENT_TARGET[0] && B_PLAYER_LOCATION_Y == B_PLAYER_CURRENT_TARGET[1]) { //hedefine ulaştı ise
+            B_PLAYER_COIN_COUNT += COIN_MATRIX[B_PLAYER_LOCATION_X][B_PLAYER_LOCATION_Y];
+            COIN_MATRIX[B_PLAYER_LOCATION_X][B_PLAYER_LOCATION_Y] = 0;
+
+            B_PLAYER_CURRENT_TARGET = FIND_TARGET_FOR_B_PLAYER();
+            if (B_PLAYER_CURRENT_TARGET[0] == 0 && B_PLAYER_CURRENT_TARGET[1] == 0) {
+                B_PLAYER_ELIMINATED = true;
+            } else {
+                B_PLAYER_COIN_COUNT = B_PLAYER_COIN_COUNT - B_PLAYER_TARGET_COST;
+            }
+
+        }
+        if (B_PLAYER_CURRENT_TARGET[0] == 0 && B_PLAYER_CURRENT_TARGET[1] == 0) {
+            B_PLAYER_ELIMINATED = true;
+        }
+        if (B_PLAYER_ELIMINATED == false) {
+            B_PLAYER_COIN_COUNT = B_PLAYER_COIN_COUNT - B_PLAYER_MOVE_COST;
+        }
+
+        if (B_PLAYER_COIN_COUNT <= 0) {
+            B_PLAYER_ELIMINATED = true;
+            B_PLAYER_COIN_COUNT = 0;
+        }
+
+        //NEXT_PLAYER = "C";
     }
 
     public void MOVE_C() {
+        String moved = "";
+        int mod = 0;
 
+
+        if (C_PLAYER_CURRENT_TARGET[0] == 0 && C_PLAYER_CURRENT_TARGET[1] == 0) { //başlangıçta hedef belirleme
+            C_PLAYER_CURRENT_TARGET = FIND_TARGET_FOR_C_PLAYER();
+            C_PLAYER_COIN_COUNT = C_PLAYER_COIN_COUNT - C_PLAYER_TARGET_COST;
+        }
+        if (COIN_MATRIX[C_PLAYER_CURRENT_TARGET[0]][C_PLAYER_CURRENT_TARGET[1]] == 0) { //hedef başkası tarafından yendi ise yeniden hedef belirle
+            C_PLAYER_CURRENT_TARGET = FIND_TARGET_FOR_C_PLAYER();
+
+            if (C_PLAYER_CURRENT_TARGET[0] == 0 && C_PLAYER_CURRENT_TARGET[1] == 0) {
+                C_PLAYER_ELIMINATED = true;
+            } else {
+                C_PLAYER_COIN_COUNT = C_PLAYER_COIN_COUNT - C_PLAYER_TARGET_COST;
+            }
+        } // hareket ettirme kısmı
+        if (C_PLAYER_LOCATION_X > C_PLAYER_CURRENT_TARGET[0] && C_PLAYER_ELIMINATED == false) {
+            if (C_PLAYER_LOCATION_X - C_PLAYER_CURRENT_TARGET[0] >= MOVE_STEP && moved == "") {
+                C_PLAYER_LOCATION_X = C_PLAYER_LOCATION_X - MOVE_STEP;
+                moved = "true";
+            } else {
+                moved = "false";
+                if (mod == 0) {
+                    int tmp = C_PLAYER_LOCATION_X - C_PLAYER_CURRENT_TARGET[0];
+                    C_PLAYER_LOCATION_X = C_PLAYER_LOCATION_X - (C_PLAYER_LOCATION_X - C_PLAYER_CURRENT_TARGET[0]);
+                    mod = MOVE_STEP - tmp;
+                    System.out.println("mod: " + mod);
+                } else if (mod <= C_PLAYER_LOCATION_X - C_PLAYER_CURRENT_TARGET[0]) {
+                    C_PLAYER_LOCATION_X = C_PLAYER_LOCATION_X - mod;
+                } else if (C_PLAYER_LOCATION_X - C_PLAYER_CURRENT_TARGET[0] == 0) {
+                    C_PLAYER_LOCATION_X = C_PLAYER_LOCATION_X - mod;
+                } else {
+                    C_PLAYER_LOCATION_X = C_PLAYER_LOCATION_X - (C_PLAYER_LOCATION_X - C_PLAYER_CURRENT_TARGET[0]);
+                }
+
+            }
+        }
+        if (C_PLAYER_CURRENT_TARGET[0] > C_PLAYER_LOCATION_X && C_PLAYER_ELIMINATED == false) {
+            if (C_PLAYER_CURRENT_TARGET[0] - C_PLAYER_LOCATION_X >= MOVE_STEP && moved == "") {
+                C_PLAYER_LOCATION_X = C_PLAYER_LOCATION_X + MOVE_STEP;
+                moved = "true";
+            } else {
+                moved = "false";
+                if (mod == 0) {
+                    int tmp = C_PLAYER_CURRENT_TARGET[0] - C_PLAYER_LOCATION_X;
+                    C_PLAYER_LOCATION_X = C_PLAYER_LOCATION_X + (C_PLAYER_CURRENT_TARGET[0] - C_PLAYER_LOCATION_X);
+                    mod = MOVE_STEP - tmp;
+                    System.out.println("mod: " + mod);
+                } else if (mod <= C_PLAYER_CURRENT_TARGET[0] - C_PLAYER_LOCATION_X) {
+                    C_PLAYER_LOCATION_X = C_PLAYER_LOCATION_X + mod;
+                } else if (C_PLAYER_CURRENT_TARGET[0] - C_PLAYER_LOCATION_X == 0) {
+                    C_PLAYER_LOCATION_X = C_PLAYER_LOCATION_X + mod;
+                } else {
+                    C_PLAYER_LOCATION_X = C_PLAYER_LOCATION_X - (C_PLAYER_CURRENT_TARGET[0] - C_PLAYER_LOCATION_X);
+                }
+
+            }
+        }
+        if (C_PLAYER_LOCATION_Y > C_PLAYER_CURRENT_TARGET[1] && moved != "true" && C_PLAYER_ELIMINATED == false) {
+            if (C_PLAYER_LOCATION_Y - C_PLAYER_CURRENT_TARGET[1] >= MOVE_STEP && moved == "") {
+                C_PLAYER_LOCATION_Y = C_PLAYER_LOCATION_Y - MOVE_STEP;
+            } else {
+                if (mod == 0) {
+                    int tmp = C_PLAYER_LOCATION_Y - C_PLAYER_CURRENT_TARGET[1];
+                    C_PLAYER_LOCATION_Y = C_PLAYER_LOCATION_Y - (C_PLAYER_LOCATION_Y - C_PLAYER_CURRENT_TARGET[1]);
+                    mod = MOVE_STEP - tmp;
+                    System.out.println("mod: " + mod);
+                } else if (mod <= (C_PLAYER_LOCATION_Y - C_PLAYER_CURRENT_TARGET[1])) {
+                    C_PLAYER_LOCATION_Y = C_PLAYER_LOCATION_Y - mod;
+                } else if (C_PLAYER_LOCATION_Y - C_PLAYER_CURRENT_TARGET[1] == 0) {
+                    C_PLAYER_LOCATION_Y = C_PLAYER_LOCATION_Y - mod;
+                } else {
+                    C_PLAYER_LOCATION_Y = C_PLAYER_LOCATION_Y - (C_PLAYER_LOCATION_Y - C_PLAYER_CURRENT_TARGET[1]);
+                }
+
+            }
+
+        }
+        if (C_PLAYER_CURRENT_TARGET[1] > C_PLAYER_LOCATION_Y && moved != "true" && C_PLAYER_ELIMINATED == false) {
+            if (C_PLAYER_CURRENT_TARGET[1] - C_PLAYER_LOCATION_Y >= MOVE_STEP && moved == "") {
+                C_PLAYER_LOCATION_Y = C_PLAYER_LOCATION_Y + MOVE_STEP;
+            } else {
+                if (mod == 0) {
+                    int tmp = C_PLAYER_CURRENT_TARGET[1] - C_PLAYER_LOCATION_Y;
+                    C_PLAYER_LOCATION_Y = C_PLAYER_LOCATION_Y + (C_PLAYER_CURRENT_TARGET[1] - C_PLAYER_LOCATION_Y);
+                    mod = MOVE_STEP - tmp;
+                    System.out.println("mod: " + mod);
+                } else if (mod <= C_PLAYER_CURRENT_TARGET[1] - C_PLAYER_LOCATION_Y) {
+                    C_PLAYER_LOCATION_Y = C_PLAYER_LOCATION_Y + mod;
+
+                } else if (C_PLAYER_CURRENT_TARGET[1] - C_PLAYER_LOCATION_Y == 0) {
+                    C_PLAYER_LOCATION_Y = C_PLAYER_LOCATION_Y + mod;
+                } else {
+                    C_PLAYER_LOCATION_Y = C_PLAYER_LOCATION_Y + (C_PLAYER_CURRENT_TARGET[1] - C_PLAYER_LOCATION_Y);
+                }
+
+            }
+        }
+        if (C_PLAYER_LOCATION_X == C_PLAYER_CURRENT_TARGET[0] && C_PLAYER_LOCATION_Y == C_PLAYER_CURRENT_TARGET[1]) { //hedefine ulaştı ise
+            C_PLAYER_COIN_COUNT += COIN_MATRIX[C_PLAYER_LOCATION_X][C_PLAYER_LOCATION_Y];
+            COIN_MATRIX[C_PLAYER_LOCATION_X][C_PLAYER_LOCATION_Y] = 0;
+
+            C_PLAYER_CURRENT_TARGET = FIND_TARGET_FOR_C_PLAYER();
+            if (C_PLAYER_CURRENT_TARGET[0] == 0 && C_PLAYER_CURRENT_TARGET[1] == 0) {
+                C_PLAYER_ELIMINATED = true;
+            } else {
+                C_PLAYER_COIN_COUNT = C_PLAYER_COIN_COUNT - C_PLAYER_TARGET_COST;
+            }
+
+        }
+        if (C_PLAYER_CURRENT_TARGET[0] == 0 && C_PLAYER_CURRENT_TARGET[1] == 0) {
+            C_PLAYER_ELIMINATED = true;
+        }
+        if (C_PLAYER_ELIMINATED == false) {
+            C_PLAYER_COIN_COUNT = C_PLAYER_COIN_COUNT - C_PLAYER_MOVE_COST;
+        }
+
+        if (C_PLAYER_COIN_COUNT <= 0) {
+            C_PLAYER_ELIMINATED = true;
+            C_PLAYER_COIN_COUNT = 0;
+        }
+
+        //NEXT_PLAYER = "A";
     }
 
     public void MOVE_D() {
+        String moved = "";
+        int mod = 0;
 
+
+        if (D_PLAYER_CURRENT_TARGET[0] == 0 && D_PLAYER_CURRENT_TARGET[1] == 0) { //başlangıçta hedef belirleme
+            D_PLAYER_CURRENT_TARGET = FIND_TARGET_FOR_D_PLAYER();
+            D_PLAYER_COIN_COUNT = D_PLAYER_COIN_COUNT - D_PLAYER_TARGET_COST;
+        }
+        if (COIN_MATRIX[D_PLAYER_CURRENT_TARGET[0]][D_PLAYER_CURRENT_TARGET[1]] == 0) { //hedef başkası tarafından yendi ise yeniden hedef belirle
+            D_PLAYER_CURRENT_TARGET = FIND_TARGET_FOR_D_PLAYER();
+
+            if (D_PLAYER_CURRENT_TARGET[0] == 0 && D_PLAYER_CURRENT_TARGET[1] == 0) {
+                D_PLAYER_ELIMINATED = true;
+            } else {
+                D_PLAYER_COIN_COUNT = D_PLAYER_COIN_COUNT - D_PLAYER_TARGET_COST;
+            }
+        } // hareket ettirme kısmı
+        if (D_PLAYER_LOCATION_X > D_PLAYER_CURRENT_TARGET[0] && D_PLAYER_ELIMINATED == false) {
+            if (D_PLAYER_LOCATION_X - D_PLAYER_CURRENT_TARGET[0] >= MOVE_STEP && moved == "") {
+                D_PLAYER_LOCATION_X = D_PLAYER_LOCATION_X - MOVE_STEP;
+                moved = "true";
+            } else {
+                moved = "false";
+                if (mod == 0) {
+                    int tmp = D_PLAYER_LOCATION_X - D_PLAYER_CURRENT_TARGET[0];
+                    D_PLAYER_LOCATION_X = D_PLAYER_LOCATION_X - (D_PLAYER_LOCATION_X - D_PLAYER_CURRENT_TARGET[0]);
+                    mod = MOVE_STEP - tmp;
+                    System.out.println("mod: " + mod);
+                } else if (mod <= D_PLAYER_LOCATION_X - D_PLAYER_CURRENT_TARGET[0]) {
+                    D_PLAYER_LOCATION_X = D_PLAYER_LOCATION_X - mod;
+                } else if (D_PLAYER_LOCATION_X - D_PLAYER_CURRENT_TARGET[0] == 0) {
+                    D_PLAYER_LOCATION_X = D_PLAYER_LOCATION_X - mod;
+                } else {
+                    D_PLAYER_LOCATION_X = D_PLAYER_LOCATION_X - (D_PLAYER_LOCATION_X - D_PLAYER_CURRENT_TARGET[0]);
+                }
+
+            }
+        }
+        if (D_PLAYER_CURRENT_TARGET[0] > D_PLAYER_LOCATION_X && D_PLAYER_ELIMINATED == false) {
+            if (D_PLAYER_CURRENT_TARGET[0] - D_PLAYER_LOCATION_X >= MOVE_STEP && moved == "") {
+                D_PLAYER_LOCATION_X = D_PLAYER_LOCATION_X + MOVE_STEP;
+                moved = "true";
+            } else {
+                moved = "false";
+                if (mod == 0) {
+                    int tmp = D_PLAYER_CURRENT_TARGET[0] - D_PLAYER_LOCATION_X;
+                    D_PLAYER_LOCATION_X = D_PLAYER_LOCATION_X + (D_PLAYER_CURRENT_TARGET[0] - D_PLAYER_LOCATION_X);
+                    mod = MOVE_STEP - tmp;
+                    System.out.println("mod: " + mod);
+                } else if (mod <= D_PLAYER_CURRENT_TARGET[0] - D_PLAYER_LOCATION_X) {
+                    D_PLAYER_LOCATION_X = D_PLAYER_LOCATION_X + mod;
+                } else if (D_PLAYER_CURRENT_TARGET[0] - D_PLAYER_LOCATION_X == 0) {
+                    D_PLAYER_LOCATION_X = D_PLAYER_LOCATION_X + mod;
+                } else {
+                    D_PLAYER_LOCATION_X = D_PLAYER_LOCATION_X - (D_PLAYER_CURRENT_TARGET[0] - D_PLAYER_LOCATION_X);
+                }
+
+            }
+        }
+        if (D_PLAYER_LOCATION_Y > D_PLAYER_CURRENT_TARGET[1] && moved != "true" && D_PLAYER_ELIMINATED == false) {
+            if (D_PLAYER_LOCATION_Y - D_PLAYER_CURRENT_TARGET[1] >= MOVE_STEP && moved == "") {
+                D_PLAYER_LOCATION_Y = D_PLAYER_LOCATION_Y - MOVE_STEP;
+            } else {
+                if (mod == 0) {
+                    int tmp = D_PLAYER_LOCATION_Y - D_PLAYER_CURRENT_TARGET[1];
+                    D_PLAYER_LOCATION_Y = D_PLAYER_LOCATION_Y - (D_PLAYER_LOCATION_Y - D_PLAYER_CURRENT_TARGET[1]);
+                    mod = MOVE_STEP - tmp;
+                    System.out.println("mod: " + mod);
+                } else if (mod <= (D_PLAYER_LOCATION_Y - D_PLAYER_CURRENT_TARGET[1])) {
+                    D_PLAYER_LOCATION_Y = D_PLAYER_LOCATION_Y - mod;
+                } else if (D_PLAYER_LOCATION_Y - D_PLAYER_CURRENT_TARGET[1] == 0) {
+                    D_PLAYER_LOCATION_Y = D_PLAYER_LOCATION_Y - mod;
+                } else {
+                    D_PLAYER_LOCATION_Y = D_PLAYER_LOCATION_Y - (D_PLAYER_LOCATION_Y - D_PLAYER_CURRENT_TARGET[1]);
+                }
+
+            }
+
+        }
+        if (D_PLAYER_CURRENT_TARGET[1] > D_PLAYER_LOCATION_Y && moved != "true" && D_PLAYER_ELIMINATED == false) {
+            if (D_PLAYER_CURRENT_TARGET[1] - D_PLAYER_LOCATION_Y >= MOVE_STEP && moved == "") {
+                D_PLAYER_LOCATION_Y = D_PLAYER_LOCATION_Y + MOVE_STEP;
+            } else {
+                if (mod == 0) {
+                    int tmp = D_PLAYER_CURRENT_TARGET[1] - D_PLAYER_LOCATION_Y;
+                    D_PLAYER_LOCATION_Y = D_PLAYER_LOCATION_Y + (D_PLAYER_CURRENT_TARGET[1] - D_PLAYER_LOCATION_Y);
+                    mod = MOVE_STEP - tmp;
+                    System.out.println("mod: " + mod);
+                } else if (mod <= D_PLAYER_CURRENT_TARGET[1] - D_PLAYER_LOCATION_Y) {
+                    D_PLAYER_LOCATION_Y = D_PLAYER_LOCATION_Y + mod;
+
+                } else if (D_PLAYER_CURRENT_TARGET[1] - D_PLAYER_LOCATION_Y == 0) {
+                    D_PLAYER_LOCATION_Y = D_PLAYER_LOCATION_Y + mod;
+                } else {
+                    D_PLAYER_LOCATION_Y = D_PLAYER_LOCATION_Y + (D_PLAYER_CURRENT_TARGET[1] - D_PLAYER_LOCATION_Y);
+                }
+
+            }
+        }
+        if (D_PLAYER_LOCATION_X == D_PLAYER_CURRENT_TARGET[0] && D_PLAYER_LOCATION_Y == D_PLAYER_CURRENT_TARGET[1]) { //hedefine ulaştı ise
+            D_PLAYER_COIN_COUNT += COIN_MATRIX[D_PLAYER_LOCATION_X][D_PLAYER_LOCATION_Y];
+            COIN_MATRIX[D_PLAYER_LOCATION_X][D_PLAYER_LOCATION_Y] = 0;
+
+            D_PLAYER_CURRENT_TARGET = FIND_TARGET_FOR_D_PLAYER();
+            if (D_PLAYER_CURRENT_TARGET[0] == 0 && D_PLAYER_CURRENT_TARGET[1] == 0) {
+                D_PLAYER_ELIMINATED = true;
+            } else {
+                D_PLAYER_COIN_COUNT = D_PLAYER_COIN_COUNT - D_PLAYER_TARGET_COST;
+            }
+
+        }
+        if (D_PLAYER_CURRENT_TARGET[0] == 0 && D_PLAYER_CURRENT_TARGET[1] == 0) {
+            D_PLAYER_ELIMINATED = true;
+        }
+        if (D_PLAYER_ELIMINATED == false) {
+            D_PLAYER_COIN_COUNT = D_PLAYER_COIN_COUNT - D_PLAYER_MOVE_COST;
+        }
+
+        if (D_PLAYER_COIN_COUNT <= 0) {
+            D_PLAYER_ELIMINATED = true;
+            D_PLAYER_COIN_COUNT = 0;
+        }
+
+        //NEXT_PLAYER = "A";
+    }
+
+    public void PLAY() {
+        if (NEXT_PLAYER == "A") {
+            if (A_PLAYER_ELIMINATED == false) {
+                MOVE_A();
+            }
+            NEXT_PLAYER = "B";
+
+        } else if (NEXT_PLAYER == "B") {
+            if (B_PLAYER_ELIMINATED == false) {
+                MOVE_B();
+            }
+            NEXT_PLAYER = "C";
+
+        } else if (NEXT_PLAYER == "C") {
+            if (C_PLAYER_ELIMINATED == false) {
+                MOVE_C();
+
+            }
+            NEXT_PLAYER = "D";
+
+        } else if (NEXT_PLAYER == "D") {
+            if (D_PLAYER_ELIMINATED == false) {
+                MOVE_D();
+            }
+            NEXT_PLAYER = "A";
+        }
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+
+        System.out.println("Action Performed");
+    }
+
+    public class MyKeyAdapter extends KeyAdapter {
+        @Override
+        public void keyPressed(KeyEvent e) {
+            switch (e.getKeyCode()) {
+                case KeyEvent.VK_ENTER:
+                    //FIND_TARGET_FOR_C_PLAYER();
+                    //MOVE_A();
+                    PLAY();
+                    repaint();
+                    //FIND_TARGET_FOR_A_PLAYER();
+                    //FIND_TARGET_FOR_B_PLAYER();
+                    //randomCoins();
+                    //repaint();
+                    break;
+
+
+            }
+        }
     }
 
 }
