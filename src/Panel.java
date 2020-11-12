@@ -36,6 +36,17 @@ public class Panel extends JPanel implements ActionListener {
 
     int MOVE_STEP = 3; // HER HAMLE ICIN ADIM SAYISI
 
+    int A_PLAYER_NUM_OF_STEPS = 0;
+    int B_PLAYER_NUM_OF_STEPS = 0;
+    int C_PLAYER_NUM_OF_STEPS = 0;
+    int D_PLAYER_NUM_OF_STEPS = 0;
+
+    int A_PLAYER_NUM_OF_COLLECTED_GOLD = 0;
+    int B_PLAYER_NUM_OF_COLLECTED_GOLD = 0;
+    int C_PLAYER_NUM_OF_COLLECTED_GOLD = 0;
+    int D_PLAYER_NUM_OF_COLLECTED_GOLD = 0;
+
+
     int A_PLAYER_COIN_COUNT = 200;
     int B_PLAYER_COIN_COUNT = 200;
     int C_PLAYER_COIN_COUNT = 200;
@@ -183,6 +194,18 @@ public class Panel extends JPanel implements ActionListener {
         g.drawString("B PLAYER: " + B_PLAYER_COIN_COUNT + " COIN", SCREEN_WIDTH / 4 * 1, SCREEN_HEIGHT + 50);
         g.drawString("C PLAYER: " + C_PLAYER_COIN_COUNT + " COIN", SCREEN_WIDTH / 4 * 2, SCREEN_HEIGHT + 50);
         g.drawString("D PLAYER: " + D_PLAYER_COIN_COUNT + " COIN", SCREEN_WIDTH / 4 * 3, SCREEN_HEIGHT + 50);
+
+        g.setColor(Color.GREEN);
+        g.drawString("A NUM OF STEP: " + A_PLAYER_NUM_OF_STEPS, SCREEN_WIDTH / 4 * 0, SCREEN_HEIGHT + 65);
+        g.drawString("B NUM OF STEP: " + B_PLAYER_NUM_OF_STEPS, SCREEN_WIDTH / 4 * 1, SCREEN_HEIGHT + 65);
+        g.drawString("C NUM OF STEP: " + C_PLAYER_NUM_OF_STEPS, SCREEN_WIDTH / 4 * 2, SCREEN_HEIGHT + 65);
+        g.drawString("D NUM OF STEP: " + D_PLAYER_NUM_OF_STEPS, SCREEN_WIDTH / 4 * 3, SCREEN_HEIGHT + 65);
+
+        g.setColor(Color.BLUE);
+        g.drawString("A COLLECTED GOLD: " + A_PLAYER_NUM_OF_COLLECTED_GOLD, SCREEN_WIDTH / 4 * 0, SCREEN_HEIGHT + 80);
+        g.drawString("B COLLECTED GOLD: " + B_PLAYER_NUM_OF_COLLECTED_GOLD, SCREEN_WIDTH / 4 * 1, SCREEN_HEIGHT + 80);
+        g.drawString("C COLLECTED GOLD: " + C_PLAYER_NUM_OF_COLLECTED_GOLD, SCREEN_WIDTH / 4 * 2, SCREEN_HEIGHT + 80);
+        g.drawString("D COLLECTED GOLD: " + D_PLAYER_NUM_OF_COLLECTED_GOLD, SCREEN_WIDTH / 4 * 3, SCREEN_HEIGHT + 80);
 
         for (int i = 0; i <= SIZE; i++) {
             g.setColor(Color.BLACK);
@@ -469,6 +492,7 @@ public class Panel extends JPanel implements ActionListener {
             }
         }
         if (A_PLAYER_LOCATION_X == A_PLAYER_CURRENT_TARGET[0] && A_PLAYER_LOCATION_Y == A_PLAYER_CURRENT_TARGET[1]) { //hedefine ulaştı ise
+            A_PLAYER_NUM_OF_COLLECTED_GOLD += COIN_MATRIX[A_PLAYER_LOCATION_X][A_PLAYER_LOCATION_Y];
             A_PLAYER_COIN_COUNT += COIN_MATRIX[A_PLAYER_LOCATION_X][A_PLAYER_LOCATION_Y];
             COIN_MATRIX[A_PLAYER_LOCATION_X][A_PLAYER_LOCATION_Y] = 0;
 
@@ -485,6 +509,7 @@ public class Panel extends JPanel implements ActionListener {
         }
         if (A_PLAYER_ELIMINATED == false) {
             A_PLAYER_COIN_COUNT = A_PLAYER_COIN_COUNT - A_PLAYER_MOVE_COST;
+            A_PLAYER_NUM_OF_STEPS++;
         }
 
         if (A_PLAYER_COIN_COUNT <= 0) {
@@ -597,6 +622,7 @@ public class Panel extends JPanel implements ActionListener {
             }
         }
         if (B_PLAYER_LOCATION_X == B_PLAYER_CURRENT_TARGET[0] && B_PLAYER_LOCATION_Y == B_PLAYER_CURRENT_TARGET[1]) { //hedefine ulaştı ise
+            B_PLAYER_NUM_OF_COLLECTED_GOLD += COIN_MATRIX[B_PLAYER_LOCATION_X][B_PLAYER_LOCATION_Y];
             B_PLAYER_COIN_COUNT += COIN_MATRIX[B_PLAYER_LOCATION_X][B_PLAYER_LOCATION_Y];
             COIN_MATRIX[B_PLAYER_LOCATION_X][B_PLAYER_LOCATION_Y] = 0;
 
@@ -613,6 +639,7 @@ public class Panel extends JPanel implements ActionListener {
         }
         if (B_PLAYER_ELIMINATED == false) {
             B_PLAYER_COIN_COUNT = B_PLAYER_COIN_COUNT - B_PLAYER_MOVE_COST;
+            B_PLAYER_NUM_OF_STEPS++;
         }
 
         if (B_PLAYER_COIN_COUNT <= 0) {
@@ -724,6 +751,7 @@ public class Panel extends JPanel implements ActionListener {
             }
         }
         if (C_PLAYER_LOCATION_X == C_PLAYER_CURRENT_TARGET[0] && C_PLAYER_LOCATION_Y == C_PLAYER_CURRENT_TARGET[1]) { //hedefine ulaştı ise
+            C_PLAYER_NUM_OF_COLLECTED_GOLD += COIN_MATRIX[C_PLAYER_LOCATION_X][C_PLAYER_LOCATION_Y];
             C_PLAYER_COIN_COUNT += COIN_MATRIX[C_PLAYER_LOCATION_X][C_PLAYER_LOCATION_Y];
             COIN_MATRIX[C_PLAYER_LOCATION_X][C_PLAYER_LOCATION_Y] = 0;
 
@@ -740,6 +768,7 @@ public class Panel extends JPanel implements ActionListener {
         }
         if (C_PLAYER_ELIMINATED == false) {
             C_PLAYER_COIN_COUNT = C_PLAYER_COIN_COUNT - C_PLAYER_MOVE_COST;
+            C_PLAYER_NUM_OF_STEPS++;
         }
 
         if (C_PLAYER_COIN_COUNT <= 0) {
@@ -851,6 +880,7 @@ public class Panel extends JPanel implements ActionListener {
             }
         }
         if (D_PLAYER_LOCATION_X == D_PLAYER_CURRENT_TARGET[0] && D_PLAYER_LOCATION_Y == D_PLAYER_CURRENT_TARGET[1]) { //hedefine ulaştı ise
+            D_PLAYER_NUM_OF_COLLECTED_GOLD += COIN_MATRIX[D_PLAYER_LOCATION_X][D_PLAYER_LOCATION_Y];
             D_PLAYER_COIN_COUNT += COIN_MATRIX[D_PLAYER_LOCATION_X][D_PLAYER_LOCATION_Y];
             COIN_MATRIX[D_PLAYER_LOCATION_X][D_PLAYER_LOCATION_Y] = 0;
 
@@ -867,6 +897,7 @@ public class Panel extends JPanel implements ActionListener {
         }
         if (D_PLAYER_ELIMINATED == false) {
             D_PLAYER_COIN_COUNT = D_PLAYER_COIN_COUNT - D_PLAYER_MOVE_COST;
+            D_PLAYER_NUM_OF_STEPS++;
         }
 
         if (D_PLAYER_COIN_COUNT <= 0) {
