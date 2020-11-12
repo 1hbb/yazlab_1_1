@@ -382,8 +382,9 @@ public class Panel extends JPanel implements ActionListener {
                         } else {
                             stepA = (tmpA / MOVE_STEP) + 1;
                         }
-                        if (stepA < step) {
+                        if (stepA > step) {
                             passThisTarget = true;
+                            System.out.println("passed");
                         }
 
 
@@ -396,8 +397,9 @@ public class Panel extends JPanel implements ActionListener {
                         } else {
                             stepB = (tmpB / MOVE_STEP) + 1;
                         }
-                        if (stepB < step) {
+                        if (stepB > step) {
                             passThisTarget = true;
+                            System.out.println("passed");
                         }
 
 
@@ -410,8 +412,9 @@ public class Panel extends JPanel implements ActionListener {
                         } else {
                             stepC = (tmpC / MOVE_STEP) + 1;
                         }
-                        if (stepC < step) {
+                        if (stepC > step) {
                             passThisTarget = true;
+                            System.out.println("passed");
                         }
 
 
