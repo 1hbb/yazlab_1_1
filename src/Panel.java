@@ -4,6 +4,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -75,9 +77,13 @@ public class Panel extends JPanel implements ActionListener {
     int C_PLAYER_LOCATION_Y;
     int D_PLAYER_LOCATION_X;
     int D_PLAYER_LOCATION_Y;
+    FileWriter A_PLAYER_WRITE = new FileWriter("A_PLAYER.txt");
+    FileWriter B_PLAYER_WRITE = new FileWriter("B_PLAYER.txt");
+    FileWriter C_PLAYER_WRITE = new FileWriter("C_PLAYER.txt");
+    FileWriter D_PLAYER_WRITE = new FileWriter("D_PLAYER.txt");
 
 
-    Panel() {
+    Panel() throws IOException {
         String str1 = JOptionPane.showInputDialog("Boyutu Girin: ");
         int size = Integer.parseInt(str1);
         SIZE = size;
@@ -439,7 +445,7 @@ public class Panel extends JPanel implements ActionListener {
         return target;
     }
 
-    public void MOVE_A() {
+    public void MOVE_A() throws IOException {
         String moved = "";
         int mod = 0;
 
@@ -558,6 +564,8 @@ public class Panel extends JPanel implements ActionListener {
         if (A_PLAYER_ELIMINATED == false) {
             A_PLAYER_COIN_COUNT = A_PLAYER_COIN_COUNT - A_PLAYER_MOVE_COST;
             A_PLAYER_NUM_OF_STEPS++;
+            A_PLAYER_WRITE.write("[" + A_PLAYER_LOCATION_X + "]" + "[" + A_PLAYER_LOCATION_Y + "]" + " -> ");
+
         }
 
         if (A_PLAYER_COIN_COUNT <= 0) {
@@ -569,7 +577,7 @@ public class Panel extends JPanel implements ActionListener {
 
     }
 
-    public void MOVE_B() {
+    public void MOVE_B() throws IOException {
         String moved = "";
         int mod = 0;
 
@@ -688,6 +696,7 @@ public class Panel extends JPanel implements ActionListener {
         if (B_PLAYER_ELIMINATED == false) {
             B_PLAYER_COIN_COUNT = B_PLAYER_COIN_COUNT - B_PLAYER_MOVE_COST;
             B_PLAYER_NUM_OF_STEPS++;
+            B_PLAYER_WRITE.write("[" + B_PLAYER_LOCATION_X + "]" + "[" + B_PLAYER_LOCATION_Y + "]" + " -> ");
         }
 
         if (B_PLAYER_COIN_COUNT <= 0) {
@@ -698,7 +707,7 @@ public class Panel extends JPanel implements ActionListener {
         //NEXT_PLAYER = "C";
     }
 
-    public void MOVE_C() {
+    public void MOVE_C() throws IOException {
         String moved = "";
         int mod = 0;
 
@@ -817,6 +826,7 @@ public class Panel extends JPanel implements ActionListener {
         if (C_PLAYER_ELIMINATED == false) {
             C_PLAYER_COIN_COUNT = C_PLAYER_COIN_COUNT - C_PLAYER_MOVE_COST;
             C_PLAYER_NUM_OF_STEPS++;
+            C_PLAYER_WRITE.write("[" + C_PLAYER_LOCATION_X + "]" + "[" + C_PLAYER_LOCATION_Y + "]" + " -> ");
         }
 
         if (C_PLAYER_COIN_COUNT <= 0) {
@@ -827,7 +837,7 @@ public class Panel extends JPanel implements ActionListener {
         //NEXT_PLAYER = "A";
     }
 
-    public void MOVE_D() {
+    public void MOVE_D() throws IOException {
         String moved = "";
         int mod = 0;
 
@@ -946,6 +956,7 @@ public class Panel extends JPanel implements ActionListener {
         if (D_PLAYER_ELIMINATED == false) {
             D_PLAYER_COIN_COUNT = D_PLAYER_COIN_COUNT - D_PLAYER_MOVE_COST;
             D_PLAYER_NUM_OF_STEPS++;
+            D_PLAYER_WRITE.write("[" + D_PLAYER_LOCATION_X + "]" + "[" + D_PLAYER_LOCATION_Y + "]" + " -> ");
         }
 
         if (D_PLAYER_COIN_COUNT <= 0) {
@@ -956,16 +967,21 @@ public class Panel extends JPanel implements ActionListener {
         //NEXT_PLAYER = "A";
     }
 
-    public void PLAY() {
+    public void PLAY() throws IOException {
         if (NEXT_PLAYER == "A") {
             if (A_PLAYER_ELIMINATED == false) {
                 MOVE_A();
+            } else {
+                A_PLAYER_WRITE.close();
             }
             NEXT_PLAYER = "B";
 
         } else if (NEXT_PLAYER == "B") {
             if (B_PLAYER_ELIMINATED == false) {
                 MOVE_B();
+            }
+            else {
+                B_PLAYER_WRITE.close();
             }
             NEXT_PLAYER = "C";
 
@@ -974,11 +990,17 @@ public class Panel extends JPanel implements ActionListener {
                 MOVE_C();
 
             }
+            else {
+                C_PLAYER_WRITE.close();
+            }
             NEXT_PLAYER = "D";
 
         } else if (NEXT_PLAYER == "D") {
             if (D_PLAYER_ELIMINATED == false) {
                 MOVE_D();
+            }
+            else {
+                D_PLAYER_WRITE.close();
             }
             NEXT_PLAYER = "A";
         }
@@ -997,7 +1019,12 @@ public class Panel extends JPanel implements ActionListener {
                 case KeyEvent.VK_ENTER:
                     //FIND_TARGET_FOR_C_PLAYER();
                     //MOVE_A();
-                    PLAY();
+
+                    try {
+                        PLAY();
+                    } catch (IOException ioException) {
+                        ioException.printStackTrace();
+                    }
                     repaint();
                     //FIND_TARGET_FOR_A_PLAYER();
                     //FIND_TARGET_FOR_B_PLAYER();

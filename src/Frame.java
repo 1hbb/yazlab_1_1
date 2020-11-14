@@ -1,9 +1,10 @@
 import javax.swing.*;
+import java.io.IOException;
 
 public class Frame extends JFrame {
 
 
-    Frame() {
+    Frame() throws IOException {
         this.add(new Panel());
         this.setTitle("Game");
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
