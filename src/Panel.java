@@ -241,22 +241,22 @@ public class Panel extends JPanel implements ActionListener {
         g.drawString("D", D_PLAYER_LOCATION_X * UNIT_SIZE + UNIT_SIZE / 2, D_PLAYER_LOCATION_Y * UNIT_SIZE + UNIT_SIZE / 2);
 
         g.setColor(Color.RED);
-        g.drawString("A PLAYER: " + A_PLAYER_COIN_COUNT + " COIN", SCREEN_WIDTH / 4 * 0, SCREEN_HEIGHT + 50);
-        g.drawString("B PLAYER: " + B_PLAYER_COIN_COUNT + " COIN", SCREEN_WIDTH / 4 * 1, SCREEN_HEIGHT + 50);
-        g.drawString("C PLAYER: " + C_PLAYER_COIN_COUNT + " COIN", SCREEN_WIDTH / 4 * 2, SCREEN_HEIGHT + 50);
-        g.drawString("D PLAYER: " + D_PLAYER_COIN_COUNT + " COIN", SCREEN_WIDTH / 4 * 3, SCREEN_HEIGHT + 50);
+        g.drawString("A OYUNCUSU: " + A_PLAYER_COIN_COUNT + " ALTIN", SCREEN_WIDTH / 4 * 0, SCREEN_HEIGHT + 50);
+        g.drawString("B OYUNCUSU: " + B_PLAYER_COIN_COUNT + " ALTIN", SCREEN_WIDTH / 4 * 1, SCREEN_HEIGHT + 50);
+        g.drawString("C OYUNCUSU: " + C_PLAYER_COIN_COUNT + " ALTIN", SCREEN_WIDTH / 4 * 2, SCREEN_HEIGHT + 50);
+        g.drawString("D OYUNCUSU: " + D_PLAYER_COIN_COUNT + " ALTIN", SCREEN_WIDTH / 4 * 3, SCREEN_HEIGHT + 50);
 
-        g.setColor(Color.GREEN);
-        g.drawString("A NUM OF STEP: " + A_PLAYER_NUM_OF_STEPS, SCREEN_WIDTH / 4 * 0, SCREEN_HEIGHT + 65);
-        g.drawString("B NUM OF STEP: " + B_PLAYER_NUM_OF_STEPS, SCREEN_WIDTH / 4 * 1, SCREEN_HEIGHT + 65);
-        g.drawString("C NUM OF STEP: " + C_PLAYER_NUM_OF_STEPS, SCREEN_WIDTH / 4 * 2, SCREEN_HEIGHT + 65);
-        g.drawString("D NUM OF STEP: " + D_PLAYER_NUM_OF_STEPS, SCREEN_WIDTH / 4 * 3, SCREEN_HEIGHT + 65);
 
-        g.setColor(Color.BLUE);
-        g.drawString("A COLLECTED GOLD: " + A_PLAYER_NUM_OF_COLLECTED_GOLD, SCREEN_WIDTH / 4 * 0, SCREEN_HEIGHT + 80);
-        g.drawString("B COLLECTED GOLD: " + B_PLAYER_NUM_OF_COLLECTED_GOLD, SCREEN_WIDTH / 4 * 1, SCREEN_HEIGHT + 80);
-        g.drawString("C COLLECTED GOLD: " + C_PLAYER_NUM_OF_COLLECTED_GOLD, SCREEN_WIDTH / 4 * 2, SCREEN_HEIGHT + 80);
-        g.drawString("D COLLECTED GOLD: " + D_PLAYER_NUM_OF_COLLECTED_GOLD, SCREEN_WIDTH / 4 * 3, SCREEN_HEIGHT + 80);
+        g.drawString("A ATILAN ADIM: " + A_PLAYER_NUM_OF_STEPS, SCREEN_WIDTH / 4 * 0, SCREEN_HEIGHT + 70);
+        g.drawString("B ATILAN ADIM: " + B_PLAYER_NUM_OF_STEPS, SCREEN_WIDTH / 4 * 1, SCREEN_HEIGHT + 70);
+        g.drawString("C ATILAN ADIM: " + C_PLAYER_NUM_OF_STEPS, SCREEN_WIDTH / 4 * 2, SCREEN_HEIGHT + 70);
+        g.drawString("D ATILAN ADIM: " + D_PLAYER_NUM_OF_STEPS, SCREEN_WIDTH / 4 * 3, SCREEN_HEIGHT + 70);
+
+
+        g.drawString("A TOPLANAN ALTIN: " + A_PLAYER_NUM_OF_COLLECTED_GOLD, SCREEN_WIDTH / 4 * 0, SCREEN_HEIGHT + 90);
+        g.drawString("B TOPLANAN ALTIN: " + B_PLAYER_NUM_OF_COLLECTED_GOLD, SCREEN_WIDTH / 4 * 1, SCREEN_HEIGHT + 90);
+        g.drawString("C TOPLANAN ALTIN: " + C_PLAYER_NUM_OF_COLLECTED_GOLD, SCREEN_WIDTH / 4 * 2, SCREEN_HEIGHT + 90);
+        g.drawString("D TOPLANAN ALTIN: " + D_PLAYER_NUM_OF_COLLECTED_GOLD, SCREEN_WIDTH / 4 * 3, SCREEN_HEIGHT + 90);
 
         for (int i = 0; i <= SIZE; i++) {
             g.setColor(Color.BLACK);
@@ -290,9 +290,10 @@ public class Panel extends JPanel implements ActionListener {
         for (int i = 0; i < SIZE; i++) {
             for (int j = 0; j < SIZE; j++) {
                 if (COIN_MATRIX[i][j] != 0) { // sadece altın olan noktalarda işlem yapmak için
-                    int tmp = Math.abs((A_PLAYER_LOCATION_X - i)) + Math.abs((A_PLAYER_LOCATION_Y - j)); // A oyuncusunun konumu ile altın arasındaki mesafenin mutlak değeri
-                    if (tmp < distance) { //en yakını bulduğumuz kısım
-                        distance = tmp; // mesafeyi her tmp değişkenine atıyoruz
+                    int manhattanDistance = Math.abs((A_PLAYER_LOCATION_X - i) * (A_PLAYER_LOCATION_X - i)) + Math.abs((A_PLAYER_LOCATION_Y - j) * (A_PLAYER_LOCATION_Y - j));
+                    manhattanDistance = (int) Math.sqrt(manhattanDistance);
+                    if (manhattanDistance < distance) { //en yakını bulduğumuz kısım
+                        distance = manhattanDistance; // mesafeyi her tmp değişkenine atıyoruz
                         target[0] = i; //en yakındaki altının x koordinatı
                         target[1] = j; //en yakındaki altının y koordinatı
                     }
@@ -312,6 +313,8 @@ public class Panel extends JPanel implements ActionListener {
         for (int i = 0; i < SIZE; i++) {
             for (int j = 0; j < SIZE; j++) {
                 if (COIN_MATRIX[i][j] != 0) {
+                    int manhattanDistance = Math.abs((B_PLAYER_LOCATION_X - i) * (B_PLAYER_LOCATION_X - i)) + Math.abs((B_PLAYER_LOCATION_Y - j) * (B_PLAYER_LOCATION_Y - j));
+                    manhattanDistance = (int) Math.sqrt(manhattanDistance);
                     int tmp = Math.abs((B_PLAYER_LOCATION_X - i)) + Math.abs((B_PLAYER_LOCATION_Y - j));
                     tmp = Math.abs(tmp);
                     int step;
@@ -321,8 +324,8 @@ public class Panel extends JPanel implements ActionListener {
                         step = (tmp / MOVE_STEP) + 1;
                     }
                     int tmp_earning = COIN_MATRIX[i][j] - (step * B_PLAYER_MOVE_COST);
-                    if (tmp <= distance && tmp_earning >= earning) {
-                        distance = tmp;
+                    if (manhattanDistance <= distance && tmp_earning >= earning) {
+                        distance = manhattanDistance;
                         earning = tmp_earning;
                         target[0] = i;
                         target[1] = j;
@@ -351,6 +354,8 @@ public class Panel extends JPanel implements ActionListener {
         for (int i = 0; i < SIZE; i++) {
             for (int j = 0; j < SIZE; j++) {
                 if (COIN_MATRIX[i][j] != 0) {
+                    int manhattanDistance = Math.abs((C_PLAYER_LOCATION_X - i) * (C_PLAYER_LOCATION_X - i)) + Math.abs((C_PLAYER_LOCATION_Y - j) * (C_PLAYER_LOCATION_Y - j));
+                    manhattanDistance = (int) Math.sqrt(manhattanDistance);
                     int tmp = Math.abs((C_PLAYER_LOCATION_X - i)) + Math.abs((C_PLAYER_LOCATION_Y - j));
                     tmp = Math.abs(tmp);
                     int step;
@@ -360,8 +365,8 @@ public class Panel extends JPanel implements ActionListener {
                         step = (tmp / MOVE_STEP) + 1;
                     }
                     int tmp_earning = COIN_MATRIX[i][j] - (step * C_PLAYER_MOVE_COST);
-                    if (tmp <= distance && tmp_earning >= earning) {
-                        distance = tmp;
+                    if (manhattanDistance <= distance && tmp_earning >= earning) {
+                        distance = manhattanDistance;
                         earning = tmp_earning;
                         target[0] = i;
                         target[1] = j;
@@ -416,6 +421,8 @@ public class Panel extends JPanel implements ActionListener {
         for (int i = 0; i < SIZE; i++) {
             for (int j = 0; j < SIZE; j++) {
                 if (COIN_MATRIX[i][j] != 0) {
+                    int manhattanDistance = Math.abs((D_PLAYER_LOCATION_X - i) * (D_PLAYER_LOCATION_X - i)) + Math.abs((D_PLAYER_LOCATION_Y - j) * (D_PLAYER_LOCATION_Y - j));
+                    manhattanDistance = (int) Math.sqrt(manhattanDistance);
                     int tmp = Math.abs((D_PLAYER_LOCATION_X - i)) + Math.abs((D_PLAYER_LOCATION_Y - j));
                     tmp = Math.abs(tmp);
                     int step;
@@ -473,8 +480,8 @@ public class Panel extends JPanel implements ActionListener {
 
 
                     int tmp_earning = COIN_MATRIX[i][j] - (step * D_PLAYER_MOVE_COST);
-                    if (tmp <= distance && tmp_earning >= earning && passThisTarget == false) {
-                        distance = tmp;
+                    if (manhattanDistance <= distance && tmp_earning >= earning && passThisTarget == false) {
+                        distance = manhattanDistance;
                         earning = tmp_earning;
                         target[0] = i;
                         target[1] = j;
