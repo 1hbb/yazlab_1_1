@@ -32,11 +32,15 @@ public class Panel extends JPanel implements ActionListener {
     boolean running = false;
     Random random;
 
-    int SIZE;
+    int SIZE = 20;
     int[][] COIN_MATRIX = new int[SIZE][SIZE];
     int[][] SECRET_COIN_MATRIX = new int[SIZE][SIZE];
 
     int MOVE_STEP = 3; // HER HAMLE ICIN ADIM SAYISI
+
+    int GOLDEN_RATIO = 20;
+    int SECRET_GOLDEN_RATIO = 10;
+    int GOLDEN_PER_PLAYER = 200;
 
     int A_PLAYER_NUM_OF_STEPS = 0;
     int B_PLAYER_NUM_OF_STEPS = 0;
@@ -49,10 +53,10 @@ public class Panel extends JPanel implements ActionListener {
     int D_PLAYER_NUM_OF_COLLECTED_GOLD = 0;
 
 
-    int A_PLAYER_COIN_COUNT = 200;
-    int B_PLAYER_COIN_COUNT = 200;
-    int C_PLAYER_COIN_COUNT = 200;
-    int D_PLAYER_COIN_COUNT = 200;
+    int A_PLAYER_COIN_COUNT = GOLDEN_PER_PLAYER;
+    int B_PLAYER_COIN_COUNT = GOLDEN_PER_PLAYER;
+    int C_PLAYER_COIN_COUNT = GOLDEN_PER_PLAYER;
+    int D_PLAYER_COIN_COUNT = GOLDEN_PER_PLAYER;
 
     int A_PLAYER_TARGET_COST = 5;
     int B_PLAYER_TARGET_COST = 10;
@@ -84,13 +88,54 @@ public class Panel extends JPanel implements ActionListener {
 
 
     Panel() throws IOException {
-        String str1 = JOptionPane.showInputDialog("Boyutu Girin: ");
-        int size = Integer.parseInt(str1);
-        SIZE = size;
+        int size = SIZE;
+        int dialogButton = JOptionPane.showConfirmDialog(null, "Özel degerler girecek misiniz?");
+        if (dialogButton == JOptionPane.YES_OPTION) {
+            String getSize = JOptionPane.showInputDialog("Boyutu Girin  (Default: 20): ");
+            size = Integer.parseInt(getSize);
+            SIZE = size;
+            String getGoldenRatio = JOptionPane.showInputDialog("Altın Oranı Girin (Default: 20): ");
+            GOLDEN_RATIO = Integer.parseInt(getGoldenRatio);
+            String getSecretCoınRatio = JOptionPane.showInputDialog("Gizli Altın Oranı Girin (Default: 10): ");
+            SECRET_GOLDEN_RATIO = Integer.parseInt(getSecretCoınRatio);
+            String getGoldenPerPlayer = JOptionPane.showInputDialog("Her Oyuncu İçin Altın Sayısı (Default: 200): ");
+            GOLDEN_PER_PLAYER = Integer.parseInt(getGoldenPerPlayer);
+            A_PLAYER_COIN_COUNT = GOLDEN_PER_PLAYER;
+            B_PLAYER_COIN_COUNT = GOLDEN_PER_PLAYER;
+            C_PLAYER_COIN_COUNT = GOLDEN_PER_PLAYER;
+            D_PLAYER_COIN_COUNT = GOLDEN_PER_PLAYER;
+
+
+            String getAMoveCost = JOptionPane.showInputDialog("A Oyuncusu Hamle Başına Maliyet (Default: 5): ");
+            A_PLAYER_MOVE_COST = Integer.parseInt(getAMoveCost);
+
+            String getBMoveCost = JOptionPane.showInputDialog("B Oyuncusu Hamle Başına Maliyet (Default: 5): ");
+            B_PLAYER_MOVE_COST = Integer.parseInt(getBMoveCost);
+
+            String getCMoveCost = JOptionPane.showInputDialog("C Oyuncusu Hamle Başına Maliyet (Default: 5): ");
+            C_PLAYER_MOVE_COST = Integer.parseInt(getCMoveCost);
+
+            String getDMoveCost = JOptionPane.showInputDialog("D Oyuncusu Hamle Başına Maliyet (Default: 5): ");
+            D_PLAYER_MOVE_COST = Integer.parseInt(getDMoveCost);
+
+            String getATargetCost = JOptionPane.showInputDialog("A Oyuncusu Hedef Belirleme Maliyeti (Default: 5): ");
+            A_PLAYER_TARGET_COST = Integer.parseInt(getATargetCost);
+
+            String getBTargetCost = JOptionPane.showInputDialog("B Oyuncusu Hedef Belirleme Maliyeti (Default: 10): ");
+            B_PLAYER_TARGET_COST = Integer.parseInt(getBTargetCost);
+
+            String getCTargetCost = JOptionPane.showInputDialog("C Oyuncusu Hedef Belirleme Maliyeti (Default: 15): ");
+            C_PLAYER_TARGET_COST = Integer.parseInt(getCTargetCost);
+
+            String getDTargetCost = JOptionPane.showInputDialog("D Oyuncusu Hedef Belirleme Maliyeti (Default: 20): ");
+            D_PLAYER_TARGET_COST = Integer.parseInt(getDTargetCost);
+        }
+
+
         System.out.println(SIZE);
         UNIT_SIZE = 800 / size;
-        coinCount = (SCREEN_HEIGHT / UNIT_SIZE * SCREEN_HEIGHT / UNIT_SIZE) * 20 / 100;
-        secretCoinCount = coinCount * 1 / 10;
+        coinCount = (SCREEN_HEIGHT / UNIT_SIZE * SCREEN_HEIGHT / UNIT_SIZE) * GOLDEN_RATIO / 100;
+        secretCoinCount = coinCount * SECRET_GOLDEN_RATIO / 100;
         System.out.println("secret coin count " + secretCoinCount);
         A_PLAYER_LOCATION_X = 0;
         A_PLAYER_LOCATION_Y = 0;
@@ -979,8 +1024,7 @@ public class Panel extends JPanel implements ActionListener {
         } else if (NEXT_PLAYER == "B") {
             if (B_PLAYER_ELIMINATED == false) {
                 MOVE_B();
-            }
-            else {
+            } else {
                 B_PLAYER_WRITE.close();
             }
             NEXT_PLAYER = "C";
@@ -989,8 +1033,7 @@ public class Panel extends JPanel implements ActionListener {
             if (C_PLAYER_ELIMINATED == false) {
                 MOVE_C();
 
-            }
-            else {
+            } else {
                 C_PLAYER_WRITE.close();
             }
             NEXT_PLAYER = "D";
@@ -998,8 +1041,7 @@ public class Panel extends JPanel implements ActionListener {
         } else if (NEXT_PLAYER == "D") {
             if (D_PLAYER_ELIMINATED == false) {
                 MOVE_D();
-            }
-            else {
+            } else {
                 D_PLAYER_WRITE.close();
             }
             NEXT_PLAYER = "A";
